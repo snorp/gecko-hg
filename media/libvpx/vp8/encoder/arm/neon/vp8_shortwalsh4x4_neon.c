@@ -24,6 +24,9 @@ void vp8_short_walsh4x4_neon(
         int16_t *input,
         int16_t *output,
         int pitch) {
+// FIXME Roku
+// The Roku NDK gcc is busted and gets an internal compiler error on this funcition
+#if !defined(ROKU)
     uint16x4_t d16u16;
     int16x8_t q0s16, q1s16;
     int16x4_t dEmptys16, d0s16, d1s16, d2s16, d3s16, d4s16, d5s16, d6s16, d7s16;
@@ -124,6 +127,7 @@ void vp8_short_walsh4x4_neon(
 
     vst1q_s16(output, q0s16);
     vst1q_s16(output + 8, q1s16);
+#endif
     return;
 }
 #endif  // VPX_INCOMPATIBLE_GCC

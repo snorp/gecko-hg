@@ -35,7 +35,9 @@
 #include "base/basictypes.h"
 #include "base/cpu.h"
 #include "mozilla/Assertions.h"
+#ifdef USE_SKIA
 #include "skia/SkTypes.h"
+#endif
 
 // avoid confusion with Mac OS X's math library (Carbon)
 #if defined(__APPLE__)

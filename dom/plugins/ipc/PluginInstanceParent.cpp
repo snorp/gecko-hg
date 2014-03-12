@@ -278,6 +278,9 @@ PluginInstanceParent::AnswerNPN_GetValue_NPNVnetscapeWindow(NativeWindowHandle* 
 #elif defined(MOZ_WIDGET_QT)
     // TODO: Need Qt non X impl
     int id;
+#elif defined(ROKU)
+    // TODO: Need Roku impl
+    int id;
 #else
 #warning Implement me
 #endif

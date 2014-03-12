@@ -128,7 +128,7 @@ private:
   nsTArray<nsCString> mAnylistSpecs;
 
   // When we started this query
-  TimeStamp mStartTime;
+  mozilla::TimeStamp mStartTime;
 
   // A protocol buffer for storing things we need in the remote request. We
   // store the resource chain (redirect information) as well as signature
@@ -651,7 +651,7 @@ PendingLookup::AddRedirects(nsIArray* aRedirects)
 nsresult
 PendingLookup::StartLookup()
 {
-  mStartTime = TimeStamp::Now();
+  mStartTime = mozilla::TimeStamp::Now();
   nsresult rv = DoLookupInternal();
   if (NS_FAILED(rv)) {
     return OnComplete(false, NS_OK);

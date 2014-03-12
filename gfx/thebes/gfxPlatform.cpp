@@ -41,6 +41,8 @@
 #include "gfxQtPlatform.h"
 #elif defined(ANDROID)
 #include "gfxAndroidPlatform.h"
+#elif defined(ROKU)
+#include "gfxRokuPlatform.h"
 #endif
 
 #include "nsGkAtoms.h"
@@ -488,6 +490,8 @@ gfxPlatform::Init()
     gPlatform = new gfxQtPlatform;
 #elif defined(ANDROID)
     gPlatform = new gfxAndroidPlatform;
+#elif defined(ROKU)
+    gPlatform = new gfxRokuPlatform;
 #else
     #error "No gfxPlatform implementation available"
 #endif

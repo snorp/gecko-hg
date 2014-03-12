@@ -58,6 +58,9 @@ NSPR_CONFIGURE = $(CORE_DEPTH)/../nspr/configure
 ifeq ($(OS_TARGET),Android)
 NSPR_CONFIGURE_OPTS += --with-android-ndk=$(ANDROID_NDK) --target=arm-linux-androideabi --with-android-version=$(OS_TARGET_RELEASE)
 endif
+ifeq ($(OS_TARGET),Roku)
+NSPR_CONFIGURE_OPTS += --with-roku-ndk=$(ROKU_NDK) --target=arm-brcm-linux-gnueabi
+endif
 ifdef BUILD_OPT
 NSPR_CONFIGURE_OPTS += --disable-debug --enable-optimize
 endif

@@ -1476,7 +1476,11 @@ sctp_auth_get_cookie_params(struct sctp_tcb *stcb, struct mbuf *m,
 			/* save the hmacs list and num for the key */
 			hmacs = (struct sctp_auth_hmac_algo *)phdr;
 			hmacs_len = plen - sizeof(*hmacs);
+#if defined(ROKU) // FIXME
+//			num_hmacs = hmacs_len / sizeof(hmacs->hmac_ids[0]);
+#else
 			num_hmacs = hmacs_len / sizeof(hmacs->hmac_ids[0]);
+#endif
 			if (stcb->asoc.local_hmacs != NULL)
 				sctp_free_hmaclist(stcb->asoc.local_hmacs);
 			stcb->asoc.local_hmacs = sctp_alloc_hmaclist(num_hmacs);
@@ -1503,8 +1507,13 @@ sctp_auth_get_cookie_params(struct sctp_tcb *stcb, struct mbuf *m,
 			else
 				stcb->asoc.local_auth_chunks = sctp_alloc_chunklist();
 			for (i = 0; i < num_chunks; i++) {
+#if defined(ROKU) // FIXME
+//				(void)sctp_auth_add_chunk(chunks->chunk_types[i],
+//				    stcb->asoc.local_auth_chunks);
+#else
 				(void)sctp_auth_add_chunk(chunks->chunk_types[i],
 				    stcb->asoc.local_auth_chunks);
+#endif
 			}
 		}
 		/* get next parameter */
@@ -1935,8 +1944,13 @@ sctp_validate_init_auth_params(struct mbuf *m, int offset, int limit)
 				/* record asconf/asconf-ack if listed */
 				if (chunks->chunk_types[i] == SCTP_ASCONF)
 					saw_asconf = 1;
+#if defined(ROKU) // FIXME
+//				if (chunks->chunk_types[i] == SCTP_ASCONF_ACK)
+//					saw_asconf_ack = 1;
+#else
 				if (chunks->chunk_types[i] == SCTP_ASCONF_ACK)
 					saw_asconf_ack = 1;
+#endif
 
 			}
 			if (num_chunks)

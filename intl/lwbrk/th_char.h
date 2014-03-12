@@ -22,6 +22,9 @@ typedef unsigned char	tis_char;
 #ifdef __cplusplus
 typedef char16_t	th_char;
 #else
+#if defined(ROKU)
+#include <stdint.h>
+#endif // defined(ROKU)
 typedef uint16_t	th_char;
 #endif
 #define TH_THAIBEGIN_	0x0e00

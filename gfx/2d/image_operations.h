@@ -29,13 +29,17 @@
 #ifndef SKIA_EXT_IMAGE_OPERATIONS_H_
 #define SKIA_EXT_IMAGE_OPERATIONS_H_
 
+#ifdef USE_SKIA
 #include "skia/SkTypes.h"
+#endif
 #include "Types.h"
 #include "convolver.h"
+#ifdef USE_SKIA
 #include "skia/SkRect.h"
 
 class SkBitmap;
 struct SkIRect;
+#endif
 
 namespace skia {
 
@@ -117,6 +121,7 @@ class ImageOperations {
     RESIZE_LAST_ALGORITHM_METHOD = RESIZE_SUBPIXEL,
   };
 
+#ifdef USE_SKIA
   // Resizes the given source bitmap using the specified resize method, so that
   // the entire image is (dest_size) big. The dest_subset is the rectangle in
   // this destination image that should actually be returned.
@@ -137,10 +142,11 @@ class ImageOperations {
                          ResizeMethod method,
                          int dest_width, int dest_height,
                          void* dest_pixels = nullptr);
-
+#endif
  private:
   ImageOperations();  // Class for scoping only.
 
+#ifdef USE_SKIA
   // Supports all methods except RESIZE_SUBPIXEL.
   static SkBitmap ResizeBasic(const SkBitmap& source,
                               ResizeMethod method,
@@ -152,6 +158,7 @@ class ImageOperations {
   static SkBitmap ResizeSubpixel(const SkBitmap& source,
                                  int dest_width, int dest_height,
                                  const SkIRect& dest_subset);
+#endif
 };
 
 // Returns the ceiling/floor as an integer.

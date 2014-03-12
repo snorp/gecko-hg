@@ -485,7 +485,11 @@ static void setup_rtcd_internal(void)
     vp8_short_inv_walsh4x4 = vp8_short_inv_walsh4x4_v6;
     if (flags & HAS_NEON) vp8_short_inv_walsh4x4 = vp8_short_inv_walsh4x4_neon;
     vp8_short_walsh4x4 = vp8_short_walsh4x4_armv6;
+#if !defined(ROKU)
+    // FIXME Roku
+    // The Roku NDK compiler is busted when compiling vp8_short_walsh4x4_neon
     if (flags & HAS_NEON) vp8_short_walsh4x4 = vp8_short_walsh4x4_neon;
+#endif
     vp8_sixtap_predict16x16 = vp8_sixtap_predict16x16_armv6;
     if (flags & HAS_NEON) vp8_sixtap_predict16x16 = vp8_sixtap_predict16x16_neon;
     vp8_sixtap_predict8x4 = vp8_sixtap_predict8x4_armv6;
