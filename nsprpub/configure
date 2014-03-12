@@ -725,6 +725,9 @@ dist_libdir
 dist_includedir
 dist_bindir
 dist_prefix
+ROKU_PLATFORM
+ROKU_TOOLCHAIN
+ROKU_NDK
 CC
 target_os
 target_vendor
@@ -784,6 +787,7 @@ with_android_toolchain
 with_android_version
 with_android_platform
 with_gonk
+with_roku_ndk
 with_dist_prefix
 with_dist_bindir
 with_dist_includedir
@@ -1485,6 +1489,8 @@ Optional Packages:
   --with-android-platform=DIR
                           location of platform dir
   --with-gonk=DIR         location of gonk dir
+  --with-roku-ndk=DIR
+                          location where the Roku NDK can be found
   --with-dist-prefix=DIST_PREFIX
                           place build files in DIST_PREFIX dist
   --with-dist-bindir=DIR  build execuatables in DIR DIST_PREFIX/bin
@@ -2682,6 +2688,7 @@ if test -n "$gonkdir" ; then
     $as_echo "#define ANDROID 1" >>confdefs.h
 
 else
+
 case "$target" in
 *-android*|*-linuxandroid*)
     if test -z "$android_ndk" ; then
@@ -2781,6 +2788,93 @@ $as_echo "$android_platform" >&6; }
     ;;
 esac
 fi
+
+
+
+# Check whether --with-roku-ndk was given.
+if test "${with_roku_ndk+set}" = set; then :
+  withval=$with_roku_ndk; roku_ndk=$withval
+fi
+
+
+case "$target" in
+*-brcm-linux*)
+
+    echo ================= SETTINGUP ROKU =============================
+    if test -z "$roku_ndk" ; then
+        as_fn_error $? "You must specify --with-roku-ndk=/path/to/ndk when targeting Roku." "$LINENO" 5
+    fi
+
+    roku_platform="$roku_ndk/platforms/Roku2"
+    roku_toolchain="$roku_platform/toolchain"
+    roku_toolprefix="arm-linux"
+
+    if test -d "$roku_platform" ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $roku_platform" >&5
+$as_echo "$roku_platform" >&6; }
+    else
+        as_fn_error $? "not found. Please check your NDK. With the current configuration, it should be in $roku_platform" "$LINENO" 5
+    fi
+
+    if test -d "$roku_toolchain" ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $roku_toolchain" >&5
+$as_echo "$roku_toolchain" >&6; }
+    else
+        as_fn_error $? "not found. Please check your NDK. With the current configuration, it should be in $roku_toolchain" "$LINENO" 5
+    fi
+
+        AS="$roku_toolchain"/bin/"$roku_toolprefix"-as
+    if test -z "$CC"; then
+        CC="$roku_toolchain"/bin/"$roku_toolprefix"-gcc
+    fi
+    if test -z "$CXX"; then
+        CXX="$roku_toolchain"/bin/"$roku_toolprefix"-g++
+    fi
+        if test -z "$CPP"; then
+        CPP="$roku_toolchain"/bin/"$roku_toolprefix"-cpp
+    fi
+    LD="$roku_toolchain"/bin/"$roku_toolprefix"-ld
+    AR="$roku_toolchain"/bin/"$roku_toolprefix"-ar
+    RANLIB="$roku_toolchain"/bin/"$roku_toolprefix"-ranlib
+    STRIP="$roku_toolchain"/bin/"$roku_toolprefix"-strip
+    OBJCOPY="$roku_toolchain"/bin/"$roku_toolprefix"-objcopy
+
+    CPPFLAGS="-DBUILD_PLATFORM_ROKU2 -DROKU -DLINUX -idirafter $roku_platform/include -idirafter $roku_platform/usr/include $CPPFLAGS"
+    CFLAGS="-mcpu=arm1176jzf-s -Wno-psabi -Wno-uninitialized -Wno-type-limits -U_FORTIFY_SOURCE -fno-short-enums -fno-exceptions $CFLAGS"
+    CXXFLAGS="-fvisibility-inlines-hidden -mcpu=arm1176jzf-s -Wno-psabi -Wno-uninitialized -Wno-type-limits -U_FORTIFY_SOURCE -fno-short-enums -fno-exceptions $CXXFLAGS"
+    ASFLAGS="$ASFLAGS"
+    STRIPFLAGS="--remove-section=.comment --remove-section=.note --strip-unneeded"
+
+    LDFLAGS="-Wl,--gc-sections -Wl,--copy-dt-needed-entries -Wl,--allow-shlib-undefined -L$roku_platform/lib  -L$roku_platform/usr/lib -L$roku_toolchain/arm-brcm-linux-gnueabi/sys-root/usr/lib -L$HOME/usr/lib $LDFLAGS"
+
+        MOZ_TREE_FREETYPE=1
+    ZLIB_DIR=yes
+
+        if test -z "$HOST_CPPFLAGS" ; then
+        HOST_CPPFLAGS=" "
+    fi
+    if test -z "$HOST_CFLAGS" ; then
+        HOST_CFLAGS=" "
+    fi
+    if test -z "$HOST_CXXFLAGS" ; then
+        HOST_CXXFLAGS=" "
+    fi
+    if test -z "$HOST_LDFLAGS" ; then
+        HOST_LDFLAGS=" "
+    fi
+
+    ROKU_NDK="${roku_ndk}"
+    ROKU_TOOLCHAIN="${roku_toolchain}"
+    ROKU_PLATFORM="${roku_platform}"
+
+    $as_echo "#define ROKU 1" >>confdefs.h
+
+
+
+
+
+    ;;
+esac
 
 dist_prefix='${MOD_DEPTH}/dist'
 dist_bindir='${dist_prefix}/bin'
@@ -7001,7 +7095,7 @@ tools are selected during the Xcode/Developer Tools installation." "$LINENO" 5
 	esac
     ;;
 
-*-linux*|*-gnu*|*-k*bsd*-gnu|*-android*|*-linuxandroid*)
+*-linux*|*-gnu*|*-k*bsd*-gnu|*-android*|*-linuxandroid*|*-brcm-linux*)
     if test -z "$USE_NSPR_THREADS"; then
         USE_PTHREADS=1
         IMPL_STRATEGY=_PTH

@@ -164,6 +164,12 @@ PORT_LoadLibraryFromOrigin(const char* existingShLibName,
 #endif
         PR_Free(fullPath);
     }
+#if defined(ROKU)
+    if (!lib) {
+        char rokuPath[] = "/pkg:/lib/libfoo.so";
+        lib = loader_LoadLibInReferenceDir(rokuPath, newShLibName);
+    }
+#endif
     if (!lib) {
 #ifdef DEBUG_LOADER
         PR_fprintf(PR_STDOUT, "\nAttempting to load %s\n", newShLibName);

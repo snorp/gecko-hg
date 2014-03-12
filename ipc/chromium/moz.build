@@ -196,6 +196,10 @@ if os_linux:
         SOURCES += [
             'src/base/message_pump_glib.cc',
         ]
+    if CONFIG['OS_TARGET'] == 'Roku':
+        SOURCES += [
+            'src/base/message_pump_roku.cc',
+        ]
     if CONFIG['MOZ_ENABLE_QT']:
         SOURCES += [
             'src/base/message_pump_qt.cc',

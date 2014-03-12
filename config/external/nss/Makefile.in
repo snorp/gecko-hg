@@ -214,6 +214,9 @@ DEFAULT_GMAKE_FLAGS += \
 
 DEFAULT_GMAKE_FLAGS += ARCHFLAG='$(CFLAGS) -DCHECK_FORK_GETPID $(addprefix -DANDROID_VERSION=,$(ANDROID_VERSION)) -include $(topsrcdir)/security/manager/android_stub.h'
 endif
+ifeq ($(OS_TARGET),Roku)
+DEFAULT_GMAKE_FLAGS += ARCHFLAG='$(CFLAGS) $(LDFLAGS)'
+endif
 endif
 
 ifdef WRAP_LDFLAGS
@@ -286,7 +289,7 @@ NSS_DIRS += \
 endif
 
 ifneq (,$(filter %--build-id,$(LDFLAGS)))
-DEFAULT_GMAKE_ENV = LDFLAGS=-Wl,--build-id
+DEFAULT_GMAKE_ENV = LDFLAGS="-Wl,--build-id $(LDFLAGS)"
 endif
 
 ifdef MOZ_FOLD_LIBS

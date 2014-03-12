@@ -73,7 +73,7 @@
 
 /* necessary for freetype color bitmap support (Android & B2G)
    and boot animation code (Gonk) */
-#if defined(ANDROID) || defined(FT_CONFIG_OPTION_USE_PNG)
+#if defined(ANDROID) || defined(ROKU) || defined(FT_CONFIG_OPTION_USE_PNG)
 #define PNG_READ_PACK_SUPPORTED
 #define PNG_READ_FILLER_SUPPORTED
 #define PNG_READ_STRIP_16_TO_8_SUPPORTED

@@ -26,6 +26,7 @@ builtin(include, build/autoconf/compiler-opts.m4)dnl
 builtin(include, build/autoconf/expandlibs.m4)dnl
 builtin(include, build/autoconf/arch.m4)dnl
 builtin(include, build/autoconf/android.m4)dnl
+builtin(include, build/autoconf/roku.m4)dnl
 builtin(include, build/autoconf/zlib.m4)dnl
 builtin(include, build/autoconf/linux.m4)dnl
 builtin(include, build/autoconf/python-virtualenv.m4)dnl

@@ -11,7 +11,9 @@
 #include "gfxPrefs.h"
 #include "image_operations.h"
 #include "convolver.h"
+#ifdef USE_SKIA
 #include "skia/SkTypes.h"
+#endif
 
 using std::max;
 using std::swap;
@@ -19,6 +21,7 @@ using std::swap;
 namespace mozilla {
 namespace image {
 
+#ifdef MOZ_ENABLE_SKIA
 Downscaler::Downscaler(const nsIntSize& aTargetSize)
   : mTargetSize(aTargetSize)
   , mOutputBuffer(nullptr)
@@ -214,6 +217,7 @@ Downscaler::DownscaleInputLine()
     swap(mWindow[i], mWindow[filterLength - mLinesInBuffer + i]);
   }
 }
+#endif
 
 } // namespace image
 } // namespace mozilla

@@ -981,7 +981,7 @@ SyncBaselineDebugModeOSRInfo(BaselineFrame *frame, Value *vp, bool rv)
     if (HasForcedReturn(info, rv)) {
         // Load the frame's rval and overwrite the resume address to go to the
         // epilogue.
-        MOZ_ASSERT(R0 == JSReturnOperand);
+        MOZ_ASSERT(jit::R0 == JSReturnOperand);
         info->valueR0 = frame->returnValue();
         info->resumeAddr = frame->script()->baselineScript()->epilogueEntryAddr();
         return;
@@ -1076,8 +1076,8 @@ EmitBaselineDebugModeOSRHandlerTail(MacroAssembler &masm, Register temp, bool re
     if (returnFromCallVM) {
         jumpRegs.take(ReturnReg);
     } else {
-        jumpRegs.take(R0);
-        jumpRegs.take(R1);
+        jumpRegs.take(jit::R0);
+        jumpRegs.take(jit::R1);
     }
     jumpRegs.take(BaselineFrameReg);
     Register target = jumpRegs.takeAny();
@@ -1087,8 +1087,8 @@ EmitBaselineDebugModeOSRHandlerTail(MacroAssembler &masm, Register temp, bool re
     if (returnFromCallVM) {
         masm.pop(ReturnReg);
     } else {
-        masm.popValue(R1);
-        masm.popValue(R0);
+        masm.popValue(jit::R1);
+        masm.popValue(jit::R0);
     }
 
     masm.jump(target);

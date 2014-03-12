@@ -91,6 +91,11 @@ elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'qt':
         'unix/nsGNOMERegistry.cpp',
         'unix/nsMIMEInfoUnix.cpp',
     ]
+elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'roku':
+    UNIFIED_SOURCES += [
+        'unix/nsGNOMERegistry.cpp',
+        'unix/nsMIMEInfoUnix.cpp',
+    ]
 elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'windows':
     UNIFIED_SOURCES += [
         'win/nsMIMEInfoWin.cpp',

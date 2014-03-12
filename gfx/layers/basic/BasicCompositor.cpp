@@ -17,8 +17,10 @@
 #include <algorithm>
 #include "ImageContainer.h"
 #include "gfxPrefs.h"
+#ifdef USE_SKIA
 #include "skia/SkCanvas.h"              // for SkCanvas
 #include "skia/SkBitmapDevice.h"        // for SkBitmapDevice
+#endif
 
 namespace mozilla {
 using namespace mozilla::gfx;
@@ -175,6 +177,7 @@ DrawSurfaceWithTextureCoords(DrawTarget *aDest,
                    mode, aMask, aMaskTransform, &matrix);
 }
 
+#ifdef USE_SKIA
 static SkMatrix
 Matrix3DToSkia(const gfx3DMatrix& aMatrix)
 {
@@ -232,6 +235,7 @@ SkiaTransform(DataSourceSurface* aDest,
   SkRect destRect = SkRect::MakeXYWH(0, 0, srcSize.width, srcSize.height);
   destCanvas.drawBitmapRectToRect(src, nullptr, destRect, &paint);
 }
+#endif
 
 static inline IntRect
 RoundOut(Rect r)
@@ -375,8 +379,9 @@ BasicCompositor::DrawQuad(const gfx::Rect& aRect,
     if (NS_WARN_IF(!temp)) {
       return;
     }
-
+#ifdef USE_SKIA
     SkiaTransform(temp, source, new3DTransform, transformBounds.TopLeft());
+#endif
 
     transformBounds.MoveTo(0, 0);
     buffer->DrawSurface(temp, transformBounds, transformBounds);

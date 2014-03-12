@@ -199,7 +199,7 @@
 		 ],
               }],
               ## Linux
-              [ '(OS == "linux") or (OS == "android")', {
+              [ '(OS == "linux") or (OS == "android") or (OS == "roku")', {
                  'cflags_mozilla': [
                      '-Wall',
                      '-Wno-parentheses',

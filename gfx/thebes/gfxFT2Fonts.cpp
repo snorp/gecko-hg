@@ -16,6 +16,9 @@
 #elif defined(ANDROID)
 #include "gfxAndroidPlatform.h"
 #define gfxToolkitPlatform gfxAndroidPlatform
+#elif defined(ROKU)
+#include "gfxRokuPlatform.h"
+#define gfxToolkitPlatform gfxRokuPlatform
 #endif
 
 #include "gfxTypes.h"

@@ -40,7 +40,7 @@ if CONFIG['OS_TARGET'] in ['Darwin', 'DragonFly', 'FreeBSD', 'NetBSD', 'OpenBSD'
     LOCAL_INCLUDES += [
         '/media/mtransport/third_party/nrappkit/src/port/darwin/include',
     ]
-elif CONFIG['OS_TARGET'] == 'Linux':
+elif CONFIG['OS_TARGET'] in ['Linux', 'Roku']:
     DEFINES['LINUX'] = True
     DEFINES['USE_INTERFACE_PRIORITIZER'] = True
     LOCAL_INCLUDES += [

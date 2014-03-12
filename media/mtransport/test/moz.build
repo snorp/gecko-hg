@@ -33,7 +33,7 @@ if CONFIG['OS_TARGET'] == 'Android':
     LOCAL_INCLUDES += [
         '/media/mtransport/third_party/nrappkit/src/port/android/include',
     ]
-else:
+elif CONFIG['OS_TARGET'] != 'Roku':
     DEFINES['INET6'] = True
 
 if CONFIG['OS_TARGET'] == 'Linux':
@@ -45,6 +45,11 @@ if CONFIG['OS_TARGET'] == 'Linux':
     ]
     OS_LIBS += [
         '-lrt',
+    ]
+
+if CONFIG['OS_TARGET'] == 'Roku':
+    LOCAL_INCLUDES += [
+        '/media/mtransport/third_party/nrappkit/src/port/linux/include',
     ]
 
 if CONFIG['OS_TARGET'] == 'Darwin':
@@ -61,6 +66,8 @@ if CONFIG['OS_TARGET'] in ('DragonFly', 'FreeBSD', 'NetBSD', 'OpenBSD'):
 # SCTP DEFINES
 if CONFIG['OS_TARGET'] == 'WINNT':
     DEFINES['__Userspace_os_Windows'] = 1
+elif CONFIG['OS_TARGET'] == 'Roku':
+    DEFINES['__Userspace_os_Linux'] = 1
 else:
     # Works for Darwin, Linux, Android. Probably doesn't work for others.
     DEFINES['__Userspace_os_%s' % CONFIG['OS_TARGET']] = 1
