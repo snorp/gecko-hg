@@ -47,7 +47,14 @@ private:
 
 public:
   VideoInfo()
+#if defined(ROKU)
+    : mDisplay(0, 0)
+    , mStereoMode(StereoMode::MONO)
+    , mHasVideo(false)
+    , mIsHardwareAccelerated(false)
+#else
     : VideoInfo(0, 0, false)
+#endif // defined(ROKU)
   {
     // TODO: TrackInfo should be initialized by its specific codec decoder.
     // This following call should be removed once we have that implemented.
@@ -56,7 +63,14 @@ public:
   }
 
   VideoInfo(int32_t aWidth, int32_t aHeight)
+#if defined(ROKU)
+    : mDisplay(aWidth, aHeight)
+    , mStereoMode(StereoMode::MONO)
+    , mHasVideo(true)
+    , mIsHardwareAccelerated(false)
+#else
     : VideoInfo(aWidth, aHeight, true)
+#endif // defined(ROKU)
   {
   }
 

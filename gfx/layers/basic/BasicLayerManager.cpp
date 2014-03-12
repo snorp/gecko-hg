@@ -46,8 +46,10 @@
 #include "nsRect.h"                     // for nsIntRect
 #include "nsRegion.h"                   // for nsIntRegion, etc
 #include "nsTArray.h"                   // for nsAutoTArray
+#ifdef USE_SKIA
 #include "skia/SkCanvas.h"              // for SkCanvas
 #include "skia/SkBitmapDevice.h"        // for SkBitmapDevice
+#endif
 class nsIWidget;
 
 namespace mozilla {
@@ -606,6 +608,7 @@ BasicLayerManager::SetRoot(Layer* aLayer)
   mRoot = aLayer;
 }
 
+#ifdef USE_SKIA
 static SkMatrix
 BasicLayerManager_Matrix3DToSkia(const gfx3DMatrix& aMatrix)
 {
@@ -663,6 +666,7 @@ SkiaTransform(const gfxImageSurface* aDest,
   SkRect destRect = SkRect::MakeXYWH(0, 0, srcSize.width, srcSize.height);
   destCanvas.drawBitmapRectToRect(src, nullptr, destRect, &paint);
 }
+#endif
 
 /**
  * Transform a surface using a gfx3DMatrix and blit to the destination if
@@ -703,8 +707,10 @@ Transform3D(RefPtr<SourceSurface> aSource,
   // Include a translation to the correct origin.
   gfx3DMatrix translation = gfx3DMatrix::Translation(aBounds.x, aBounds.y, 0);
 
+#ifdef USE_SKIA
   // Transform the content and offset it such that the content begins at the origin.
   SkiaTransform(destImage, aSource->GetDataSurface(), translation * aTransform, offset);
+#endif
 
   // If we haven't actually drawn to aDest then return our temporary image so
   // that the caller can do this.

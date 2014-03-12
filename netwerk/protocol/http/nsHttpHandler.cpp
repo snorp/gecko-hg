@@ -682,6 +682,8 @@ nsHttpHandler::InitUserAgentComponents()
     mPlatform.AssignLiteral(
 #if defined(ANDROID)
     "Android"
+#elif defined(ROKU)
+    "Roku"
 #elif defined(XP_WIN)
     "Windows"
 #elif defined(XP_MACOSX)

@@ -233,6 +233,8 @@ else
     MOZ_ANDROID_NDK
 fi
 
+MOZ_ROKU_NDK
+
 dnl ==============================================================
 dnl Get mozilla version from central milestone file
 dnl ==============================================================
@@ -782,6 +784,7 @@ if test -n "$CROSS_COMPILE"; then
     esac
     case "${target}" in
         *-android*|*-linuxandroid*) OS_ARCH=Linux OS_TARGET=Android ;;
+        *-brcm-linux*) OS_ARCH=Linux OS_TARGET=Roku ;;
     esac
 else
     OS_TARGET=`uname -s`
@@ -1230,7 +1233,9 @@ if test "$GNU_CC"; then
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=pointer-arith"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=pointer-sign"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=pointer-to-int-cast"
+if test "$OS_TARGET" != "Roku"; then
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=return-type"
+fi
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=sequence-point"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=switch"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=trigraphs"
@@ -1330,7 +1335,9 @@ if test "$GNU_CXX"; then
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=parentheses"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=pointer-arith"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=reorder"
+if test "$OS_TARGET" != "Roku"; then
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=return-type"
+fi
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=sequence-point"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=switch"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=trigraphs"
@@ -1664,6 +1671,15 @@ ia64*-hpux*)
     fi
     # The Maemo builders don't know about this flag
     MOZ_ARM_VFP_FLAGS="-mfpu=vfp"
+    ;;
+
+*-brcm-linux*)
+    AC_DEFINE(NO_PW_GECOS)
+    no_x=yes
+    _PLATFORM_DEFAULT_TOOLKIT=cairo-roku
+
+    MOZ_GFX_OPTIMIZE_MOBILE=1
+
     ;;
 
 *-*linux*)
@@ -3017,6 +3033,9 @@ if test "$MOZ_MEMORY"; then
     AC_DEFINE(MOZ_MEMORY_LINUX)
     AC_DEFINE(MOZ_MEMORY_ANDROID)
     ;;
+  *-brcm-linux*)
+    AC_DEFINE(MOZ_MEMORY_LINUX)
+    ;;
   *-*linux*)
     AC_DEFINE(MOZ_MEMORY_LINUX)
     ;;
@@ -3843,6 +3862,9 @@ dnl ========================================================
 
 dnl top-level configure may override this with --without-intl-api
 _INTL_API=yes
+if test "$OS_TARGET" = "Roku"; then
+_INTL_API=
+fi
 
 MOZ_CONFIG_ICU()
 

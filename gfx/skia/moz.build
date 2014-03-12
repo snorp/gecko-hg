@@ -748,6 +748,17 @@ if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
     SOURCES += [
         'trunk/src/ports/SkFontHost_mac.cpp',
     ]
+if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'roku':
+    SOURCES += [
+        'trunk/src/ports/SkDebug_stdio.cpp',
+        'trunk/src/ports/SkFontHost_cairo.cpp',
+        'trunk/src/ports/SkFontHost_FreeType.cpp',
+        'trunk/src/ports/SkFontHost_FreeType_common.cpp',
+        'trunk/src/ports/SkOSFile_posix.cpp',
+        'trunk/src/ports/SkTime_Unix.cpp',
+        'trunk/src/ports/SkTLS_pthread.cpp',
+        'trunk/src/utils/SkThreadUtils_pthread.cpp',
+    ]
 if CONFIG['MOZ_WIDGET_GTK']:
     UNIFIED_SOURCES += [
         'trunk/src/ports/SkDebug_stdio.cpp',
@@ -908,7 +919,7 @@ LOCAL_INCLUDES += [
     'trunk/src/utils/win',
 ]
 
-if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('android', 'gtk2', 'gtk3', 'qt', 'gonk', 'cocoa'):
+if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('android', 'gtk2', 'gtk3', 'qt', 'gonk', 'cocoa', 'roku'):
     DEFINES['SK_USE_POSIX_THREADS'] = 1
 
 if CONFIG['INTEL_ARCHITECTURE'] and CONFIG['HAVE_TOOLCHAIN_SUPPORT_MSSSE3']:
@@ -917,7 +928,7 @@ if CONFIG['INTEL_ARCHITECTURE'] and CONFIG['HAVE_TOOLCHAIN_SUPPORT_MSSSE3']:
 if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('android', 'gonk'):
     DEFINES['SK_FONTHOST_CAIRO_STANDALONE'] = 0
 
-if (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android') or    (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa') or    (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk') or    (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'qt') or    CONFIG['MOZ_WIDGET_GTK']:
+if (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'android') or    (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa') or    (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk') or (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'roku') or (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'qt') or  (CONFIG['MOZ_WIDGET_TOOLKIT'] == 'roku') or  CONFIG['MOZ_WIDGET_GTK']:
     DEFINES['SK_FONTHOST_DOES_NOT_USE_FONTMGR'] = 1
 
 if CONFIG['GKMEDIAS_SHARED_LIBRARY']:

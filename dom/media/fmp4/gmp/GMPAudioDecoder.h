@@ -62,7 +62,14 @@ public:
   GMPAudioDecoder(const mp4_demuxer::AudioDecoderConfig& aConfig,
                   MediaTaskQueue* aTaskQueue,
                   MediaDataDecoderCallbackProxy* aCallback)
+#if defined(ROKU)
+   : mConfig(aConfig)
+   , mCallback(aCallback)
+   , mGMP(nullptr)
+   , mAdapter(new AudioCallbackAdapter(aCallback))
+#else
    : GMPAudioDecoder(aConfig, aTaskQueue, aCallback, new AudioCallbackAdapter(aCallback))
+#endif // defined(ROKU)
   {
   }
 

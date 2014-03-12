@@ -18,8 +18,17 @@ struct DestroyPolicy
   }
 };
 
+#ifdef ROKU
+template<typename T>
+class GMPUniquePtr : public mozilla::UniquePtr<T, DestroyPolicy<T>>
+{
+public:
+  GMPUniquePtr(T* ptr) : UniquePtr<T, DestroyPolicy<T>>(ptr) {}
+};
+#else
 template<typename T>
 using GMPUniquePtr = mozilla::UniquePtr<T, DestroyPolicy<T>>;
+#endif
 
 } // namespace mozilla
 

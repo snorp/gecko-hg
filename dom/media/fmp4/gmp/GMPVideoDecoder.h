@@ -71,11 +71,22 @@ public:
                   layers::ImageContainer* aImageContainer,
                   MediaTaskQueue* aTaskQueue,
                   MediaDataDecoderCallbackProxy* aCallback)
+#if defined(ROKU)
+   : mConfig(aConfig)
+   , mCallback(aCallback)
+   , mGMP(nullptr)
+   , mHost(nullptr)
+   , mAdapter(new VideoCallbackAdapter(aCallback,
+                                       VideoInfo(aConfig.display_width,
+                                                 aConfig.display_height),
+                                       aImageContainer))
+#else
    : GMPVideoDecoder(aConfig, aLayersBackend, aImageContainer, aTaskQueue, aCallback,
                      new VideoCallbackAdapter(aCallback,
                                               VideoInfo(aConfig.display_width,
                                                         aConfig.display_height),
                                               aImageContainer))
+#endif // defined(ROKU)
   {
   }
 

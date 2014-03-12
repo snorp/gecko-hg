@@ -348,6 +348,8 @@ else
     esac
 fi
 
+MOZ_ROKU_NDK
+
 AC_SUBST(ANDROID_SOURCE)
 AC_SUBST(ANDROID_PACKAGE_NAME)
 AC_SUBST(OBJCOPY)
@@ -1010,6 +1012,7 @@ if test -n "$CROSS_COMPILE"; then
     esac
     case "${target}" in
         *-android*|*-linuxandroid*) OS_ARCH=Linux OS_TARGET=Android ;;
+        *-brcm-linux*) OS_ARCH=Linux OS_TARGET=Roku ;;
     esac
 else
     OS_TARGET=`uname -s`
@@ -1513,7 +1516,9 @@ if test "$GNU_CC"; then
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=nonnull"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=pointer-arith"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=pointer-sign"
+if test "$OS_TARGET" != "Roku"; then
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=return-type"
+fi
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=sequence-point"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=trigraphs"
         _WARNINGS_CFLAGS="${_WARNINGS_CFLAGS} -Werror=unknown-pragmas"
@@ -1604,7 +1609,9 @@ if test "$GNU_CXX"; then
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=missing-braces"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=parentheses"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=pointer-arith"
+if test "$OS_TARGET" != "Roku"; then
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=return-type"
+fi
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=sequence-point"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=switch"
         _WARNINGS_CXXFLAGS="${_WARNINGS_CXXFLAGS} -Werror=trigraphs"
@@ -2122,6 +2129,15 @@ ia64*-hpux*)
     if test -z "$CLANG_CC"; then
        MOZ_OPTIMIZE_FLAGS="-freorder-blocks $MOZ_OPTIMIZE_FLAGS"
     fi
+    ;;
+
+*-brcm-linux*)
+    AC_DEFINE(NO_PW_GECOS)
+    no_x=yes
+    _PLATFORM_DEFAULT_TOOLKIT=cairo-roku
+
+    MOZ_GFX_OPTIMIZE_MOBILE=1
+
     ;;
 
 *-*linux*)
@@ -4246,6 +4262,7 @@ MOZ_ARG_HEADER(Toolkit Options)
         -o "$_DEFAULT_TOOLKIT" = "cairo-cocoa" \
         -o "$_DEFAULT_TOOLKIT" = "cairo-uikit" \
         -o "$_DEFAULT_TOOLKIT" = "cairo-android" \
+        -o "$_DEFAULT_TOOLKIT" = "cairo-roku" \
         -o "$_DEFAULT_TOOLKIT" = "cairo-gonk"
     then
         dnl nglayout only supports building with one toolkit,
@@ -4367,6 +4384,12 @@ cairo-android)
     TK_LIBS='$(MOZ_CAIRO_LIBS) $(MOZ_PIXMAN_LIBS)'
     MOZ_PDF_PRINTING=1
     MOZ_INSTRUMENT_EVENT_LOOP=1
+    ;;
+
+cairo-roku)
+    AC_DEFINE(MOZ_WIDGET_ROKU)
+    MOZ_WIDGET_TOOLKIT=roku
+    MOZ_PDF_PRINTING=1
     ;;
 
 cairo-gonk)
@@ -5618,7 +5641,7 @@ dnl ========================================================
 
 dnl If using Linux, ensure that the PA library is available
 case "$OS_TARGET" in
-WINNT|Darwin|Android|OpenBSD)
+WINNT|Darwin|Android|Roku|OpenBSD)
     ;;
 *)
     if test -z "$MOZ_B2G"; then
@@ -5648,7 +5671,7 @@ dnl ========================================================
 dnl = Enable GStreamer
 dnl ========================================================
 case "$OS_TARGET" in
-WINNT|Darwin|Android)
+WINNT|Darwin|Android|Roku)
     ;;
 *)
     MOZ_GSTREAMER=1

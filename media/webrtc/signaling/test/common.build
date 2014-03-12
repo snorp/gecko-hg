@@ -52,6 +52,11 @@ if CONFIG['OS_TARGET'] == 'Linux':
         '/media/mtransport/third_party/nrappkit/src/port/linux/include',
     ]
 
+if CONFIG['OS_TARGET'] == 'Roku':
+    LOCAL_INCLUDES += [
+        '/media/mtransport/third_party/nrappkit/src/port/linux/include',
+    ]
+
 if CONFIG['OS_TARGET'] == 'Darwin':
     LOCAL_INCLUDES += [
         '/media/mtransport/third_party/nrappkit/src/port/darwin/include',

@@ -23,6 +23,9 @@
 #if defined(MOZ_WIDGET_GTK)
 #include "base/message_pump_glib.h"
 #endif
+#if defined(MOZ_WIDGET_ROKU)
+#include "base/message_pump_roku.h"
+#endif
 #ifdef MOZ_WIDGET_QT
 #include "base/message_pump_qt.h"
 #endif

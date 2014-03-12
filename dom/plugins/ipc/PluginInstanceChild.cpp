@@ -1274,6 +1274,8 @@ PluginInstanceChild::AnswerNPP_SetWindow(const NPRemoteWindow& aWindow)
     // TODO: Need Android impl
 #elif defined(MOZ_WIDGET_QT)
     // TODO: Need QT-nonX impl
+#elif defined(ROKU)
+    // TODO: Need Roku impl
 #else
 #  error Implement me for your OS
 #endif

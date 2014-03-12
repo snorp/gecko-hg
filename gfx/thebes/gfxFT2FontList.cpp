@@ -8,17 +8,22 @@
 #include "mozilla/MemoryReporting.h"
 
 #include "mozilla/dom/ContentChild.h"
+#if defined(ROKU)
+#include "gfxRokuPlatform.h"
+#define gfxToolkitPlatform gfxRokuPlatform
+#else
 #include "gfxAndroidPlatform.h"
+#include <android/log.h>
+#define ALOG(args...)  __android_log_print(ANDROID_LOG_INFO, "Gecko" , ## args)
+#define gfxToolkitPlatform gfxAndroidPlatform
+#endif
 #include "mozilla/Omnijar.h"
 #include "nsAutoPtr.h"
 #include "nsIInputStream.h"
 #include "nsNetUtil.h"
-#define gfxToolkitPlatform gfxAndroidPlatform
-
 #include "nsXULAppAPI.h"
 #include <dirent.h>
-#include <android/log.h>
-#define ALOG(args...)  __android_log_print(ANDROID_LOG_INFO, "Gecko" , ## args)
+
 
 #include "ft2build.h"
 #include FT_FREETYPE_H
@@ -945,7 +950,11 @@ gfxFT2FontList::AppendFacesFromFontFile(const nsCString& aFileName,
         return;
     }
 
+#if defined(ROKU)
+    FT_Library ftLibrary = gfxRokuPlatform::GetPlatform()->GetFTLibrary();
+#else
     FT_Library ftLibrary = gfxAndroidPlatform::GetPlatform()->GetFTLibrary();
+#endif
     FT_Face dummy;
     if (FT_Err_Ok == FT_New_Face(ftLibrary, aFileName.get(), -1, &dummy)) {
         LOG(("reading font info via FreeType for %s", aFileName.get()));
@@ -1107,7 +1116,11 @@ gfxFT2FontList::AppendFacesFromOmnijarEntry(nsZipArchive* aArchive,
         return;
     }
 
+#if defined(ANDROID)
     FT_Library ftLibrary = gfxAndroidPlatform::GetPlatform()->GetFTLibrary();
+#elif defined(ROKU)
+    FT_Library ftLibrary = gfxRokuPlatform::GetPlatform()->GetFTLibrary();
+#endif
 
     FT_Face dummy;
     if (FT_Err_Ok != FT_New_Memory_Face(ftLibrary, buf, bufSize, 0, &dummy)) {
