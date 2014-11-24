@@ -23,14 +23,16 @@
 #include "signaling/src/jsep/JsepSession.h"
 #include "signaling/src/jsep/JsepTransport.h"
 
+#if !defined(MOZILLA_XPCOMRT_API)
 #include "nsNetCID.h"
 #include "nsNetUtil.h"
 #include "nsICancelable.h"
 #include "nsIProxyInfo.h"
 #include "nsIProtocolProxyService.h"
 #include "nsIIOService.h"
+#endif
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 #include "MediaStreamList.h"
 #include "nsIScriptGlobalObject.h"
 #include "mozilla/Preferences.h"
@@ -150,6 +152,7 @@ PeerConnectionImpl* PeerConnectionImpl::CreatePeerConnection()
   return pc;
 }
 
+#if !defined(MOZILLA_XPCOMRT_API)
 NS_IMETHODIMP PeerConnectionMedia::ProtocolProxyQueryHandler::
 OnProxyAvailable(nsICancelable *request,
                  nsIChannel *aChannel,
@@ -196,6 +199,7 @@ OnProxyAvailable(nsICancelable *request,
 }
 
 NS_IMPL_ISUPPORTS(PeerConnectionMedia::ProtocolProxyQueryHandler, nsIProtocolProxyCallback)
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
 PeerConnectionMedia::PeerConnectionMedia(PeerConnectionImpl *parent)
     : mParent(parent),
@@ -208,6 +212,10 @@ PeerConnectionMedia::PeerConnectionMedia(PeerConnectionImpl *parent)
       mMainThread(mParent->GetMainThread()),
       mSTSThread(mParent->GetSTSThread()),
       mProxyResolveCompleted(false) {
+#if defined(MOZILLA_XPCOMRT_API)
+  // FIXME Bug 1126039 Standalone XPCOMRT does not currently support nsIProtocolProxyService or nsIIOService
+  mProxyResolveCompleted = true;
+#else
   nsresult rv;
 
   nsCOMPtr<nsIProtocolProxyService> pps =
@@ -251,6 +259,7 @@ PeerConnectionMedia::PeerConnectionMedia(PeerConnectionImpl *parent)
     CSFLogError(logTag, "%s: Failed to resolve protocol proxy: %d", __FUNCTION__, (int)rv);
     return;
   }
+#endif
 }
 
 nsresult PeerConnectionMedia::Init(const std::vector<NrIceStunServer>& stun_servers,
@@ -272,7 +281,7 @@ nsresult PeerConnectionMedia::Init(const std::vector<NrIceStunServer>& stun_serv
     return rv;
   }
   // Give us a way to globally turn off TURN support
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   bool disabled = Preferences::GetBool("media.peerconnection.turn.disable", false);
 #else
   bool disabled = false;
@@ -1019,7 +1028,7 @@ LocalSourceStreamInfo::TakePipelineFrom(RefPtr<LocalSourceStreamInfo>& info,
   return NS_OK;
 }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 /**
  * Tells you if any local streams is isolated to a specific peer identity.
  * Obviously, we want all the streams to be isolated equally so that they can
@@ -1113,7 +1122,7 @@ SourceStreamInfo::AnyCodecHasPluginID(uint64_t aPluginID)
   return false;
 }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 nsRefPtr<mozilla::dom::VideoStreamTrack>
 SourceStreamInfo::GetVideoTrackByTrackId(const std::string& trackId)
 {

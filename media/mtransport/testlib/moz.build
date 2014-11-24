@@ -4,15 +4,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-if CONFIG['OS_TARGET'] != 'WINNT' and CONFIG['MOZ_WIDGET_TOOLKIT'] != 'gonk':
-    Library('mtransport_standalone')
-
 include('../objs.mozbuild')
 
 # These files cannot be built in unified mode because of the redefinition of
 # getLogModule, UNIMPLEMENTED, nr_socket_long_term_violation_time,
 # nr_socket_short_term_violation_time.
 SOURCES += mtransport_cppsrcs
+
+Library('mtransport_s')
 
 LOCAL_INCLUDES += [
     '/media/mtransport/',
@@ -66,7 +65,7 @@ FORCE_STATIC_LIB = True
 if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk':
     DEFINES['USE_INTERFACE_PRIORITIZER'] = True
 
-for var in ('MOZILLA_INTERNAL_API', 'MOZILLA_XPCOMRT_API', 'HAVE_STRDUP', 'NR_SOCKET_IS_VOID_PTR'):
+for var in ('HAVE_STRDUP', 'NR_SOCKET_IS_VOID_PTR'):
     DEFINES[var] = True
 
 DEFINES['R_DEFINED_INT2'] = 'int16_t'

@@ -12,7 +12,7 @@
 
 #include "mozilla/Telemetry.h"
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 #include "mozilla/dom/RTCPeerConnectionBinding.h"
 #include "mozilla/Preferences.h"
 #include <mozilla/Types.h>
@@ -151,7 +151,7 @@ void PeerConnectionCtx::Destroy() {
   }
 }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 typedef Vector<nsAutoPtr<RTCStatsQuery>> RTCStatsQueries;
 
 // Telemetry reporting every second after start of first call.
@@ -303,7 +303,7 @@ PeerConnectionCtx::EverySecondTelemetryCallback_m(nsITimer* timer, void *closure
 nsresult PeerConnectionCtx::Initialize() {
   initGMP();
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   mConnectionCounter = 0;
   Telemetry::GetHistogramById(Telemetry::WEBRTC_CALL_COUNT)->Add(0);
 
@@ -366,7 +366,7 @@ nsresult PeerConnectionCtx::Cleanup() {
 PeerConnectionCtx::~PeerConnectionCtx() {
     // ensure mTelemetryTimer ends on main thread
   MOZ_ASSERT(NS_IsMainThread());
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   if (mTelemetryTimer) {
     mTelemetryTimer->Cancel();
   }

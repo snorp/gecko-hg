@@ -33,7 +33,7 @@
 #include "mozilla/dom/PeerConnectionImplEnumsBinding.h"
 #include "StreamBuffer.h"
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 #include "mozilla/TimeStamp.h"
 #include "mozilla/net/DataChannel.h"
 #include "VideoUtils.h"
@@ -129,7 +129,7 @@ using mozilla::DtlsIdentity;
 using mozilla::ErrorResult;
 using mozilla::NrIceStunServer;
 using mozilla::NrIceTurnServer;
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 using mozilla::PeerIdentity;
 #endif
 
@@ -186,7 +186,7 @@ private:
   std::vector<NrIceTurnServer> mTurnServers;
 };
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 // Not an inner class so we can forward declare.
 class RTCStatsQuery {
   public:
@@ -228,7 +228,7 @@ class RTCStatsQuery {
 #define PC_AUTO_ENTER_API_CALL_NO_CHECK() CheckThread()
 
 class PeerConnectionImpl MOZ_FINAL : public nsISupports,
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
                                      public mozilla::DataChannelConnection::DataConnectionListener,
                                      public nsNSSShutDownObject,
                                      public DOMMediaStream::PrincipalChangeObserver,
@@ -253,7 +253,7 @@ public:
 
   NS_DECL_THREADSAFE_ISUPPORTS
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   bool WrapObject(JSContext* aCx, JS::MutableHandle<JSObject*> aReflector);
 #endif
 
@@ -271,7 +271,7 @@ public:
 
   // DataConnection observers
   void NotifyDataChannel(already_AddRefed<mozilla::DataChannel> aChannel)
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
     // PeerConnectionImpl only inherits from mozilla::DataChannelConnection
     // inside libxul.
     MOZ_OVERRIDE
@@ -425,7 +425,7 @@ public:
 
   nsresult GetPeerIdentity(nsAString& peerIdentity)
   {
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
     if (mPeerIdentity) {
       peerIdentity = mPeerIdentity->ToString();
       return NS_OK;
@@ -436,7 +436,7 @@ public:
     return NS_OK;
   }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   const PeerIdentity* GetPeerIdentity() const { return mPeerIdentity; }
   nsresult SetPeerIdentity(const nsAString& peerIdentity);
 
@@ -583,7 +583,7 @@ public:
 
   bool HasMedia() const;
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // initialize telemetry for when calls start
   void startCallTelem();
 
@@ -626,7 +626,8 @@ private:
     MOZ_ASSERT(CheckThreadInt(), "Wrong thread");
   }
   bool CheckThreadInt() const {
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
+// FIXME XPCOMRT
     // Thread assertions are disabled in the C++ unit tests because those
     // make API calls off the main thread.
     // TODO(ekr@rtfm.com): Fix the unit tests so they don't do that.
@@ -637,7 +638,7 @@ private:
     return true;
   }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   void virtualDestroyNSSReference() MOZ_FINAL;
   void destructorSafeDestroyNSSReference();
   nsresult GetTimeSinceEpoch(DOMHighResTimeStamp *result);
@@ -655,7 +656,7 @@ private:
       const mozilla::JsepApplicationCodecDescription** codec,
       uint16_t* level) const;
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   static void GetStatsForPCObserver_s(
       const std::string& pcHandle,
       nsAutoPtr<RTCStatsQuery> query);
@@ -707,7 +708,7 @@ private:
 
   // identity-related fields
   mozilla::RefPtr<DtlsIdentity> mIdentity;
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // The entity on the other end of the peer-to-peer connection;
   // void if they are not yet identified, and no identity setting has been set
   nsAutoPtr<PeerIdentity> mPeerIdentity;
@@ -729,7 +730,7 @@ private:
   // The target to run stuff on
   nsCOMPtr<nsIEventTarget> mSTSThread;
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // DataConnection that's used to get all the DataChannels
   nsRefPtr<mozilla::DataChannelConnection> mDataConnection;
 #endif
@@ -741,7 +742,7 @@ private:
   mozilla::UniquePtr<PCUuidGenerator> mUuidGen;
   mozilla::UniquePtr<mozilla::JsepSession> mJsepSession;
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // Start time of ICE, used for telemetry
   mozilla::TimeStamp mIceStartTime;
   // Start time of call used for Telemetry
