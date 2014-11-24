@@ -17,7 +17,7 @@
 #include "nspr.h"
 #include "srtp.h"
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 #include "VideoSegment.h"
 #include "Layers.h"
 #include "ImageTypes.h"
@@ -39,7 +39,7 @@
 #include "transportlayerice.h"
 #include "runnable_utils.h"
 #include "libyuv/convert.h"
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 #include "mozilla/PeerIdentity.h"
 #endif
 #include "mozilla/gfx/Point.h"
@@ -580,7 +580,7 @@ void MediaPipelineTransmit::AttachToTrack(TrackID track_id) {
 #endif
 }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 void MediaPipelineTransmit::UpdateSinkIdentity_m(nsIPrincipal* principal,
                                                  const PeerIdentity* sinkIdentity) {
   ASSERT_ON_THREAD(main_thread_);
@@ -881,7 +881,7 @@ NewData(MediaStreamGraph* graph, TrackID tid,
       iter.Next();
     }
   } else if (media.GetType() == MediaSegment::VIDEO) {
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
     VideoSegment* video = const_cast<VideoSegment *>(
         static_cast<const VideoSegment *>(&media));
 
@@ -994,7 +994,7 @@ void MediaPipelineTransmit::PipelineListener::ProcessAudioChunk(
 
 }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 void MediaPipelineTransmit::PipelineListener::ProcessVideoChunk(
     VideoSessionConduit* conduit,
     VideoChunk& chunk) {
@@ -1188,7 +1188,7 @@ static void AddTrackAndListener(MediaStream* source,
                                 MediaStreamListener* listener, MediaSegment* segment,
                                 const RefPtr<TrackAddedCallback>& completed) {
   // This both adds the listener and the track
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   class Message : public ControlMessage {
    public:
     Message(MediaStream* stream, TrackID track, TrackRate rate,
@@ -1347,7 +1347,7 @@ nsresult MediaPipelineReceiveVideo::Init() {
   description_ += track_id_string;
   description_ += "]";
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API)
   listener_->AddSelf(new VideoSegment());
 #endif
 
@@ -1363,12 +1363,14 @@ MediaPipelineReceiveVideo::PipelineListener::PipelineListener(
   : GenericReceiveListener(source, track_id, source->GraphRate()),
     width_(640),
     height_(480),
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_XPCOMRT_API)
+    image_(new mozilla::SimpleImageBuffer),
+#elif defined(MOZILLA_INTERNAL_API)
     image_container_(),
     image_(),
 #endif
     monitor_("Video PipelineListener") {
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   image_container_ = layers::LayerManager::CreateImageContainer();
 #endif
 }
@@ -1379,9 +1381,13 @@ void MediaPipelineReceiveVideo::PipelineListener::RenderVideoFrame(
     uint32_t time_stamp,
     int64_t render_time,
     const RefPtr<layers::Image>& video_image) {
-#ifdef MOZILLA_INTERNAL_API
   ReentrantMonitorAutoEnter enter(monitor_);
 
+#if defined(MOZILLA_XPCOMRT_API)
+  if (buffer) {
+    image_->SetImage(buffer, buffer_size, width_, height_);
+  }
+#elif defined(MOZILLA_INTERNAL_API)
   if (buffer) {
     // Create a video frame using |buffer|.
 #ifdef MOZ_WIDGET_GONK
@@ -1426,10 +1432,15 @@ void MediaPipelineReceiveVideo::PipelineListener::
 NotifyPull(MediaStreamGraph* graph, StreamTime desired_time) {
   ReentrantMonitorAutoEnter enter(monitor_);
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_XPCOMRT_API)
+  nsRefPtr<SimpleImageBuffer> image = image_;
+#elif defined(MOZILLA_INTERNAL_API)
   nsRefPtr<layers::Image> image = image_;
   // our constructor sets track_rate_ to the graph rate
   MOZ_ASSERT(track_rate_ == source_->GraphRate());
+#endif
+
+#if defined(MOZILLA_INTERNAL_API)
   StreamTime delta = desired_time - played_ticks_;
 
   // Don't append if we've already provided a frame that supposedly
@@ -1446,6 +1457,12 @@ NotifyPull(MediaStreamGraph* graph, StreamTime desired_time) {
       return;
     }
   }
+#endif
+#if defined(MOZILLA_XPCOMRT_API)
+  // Clear the image without deleting the memory.
+  // This prevents image_ from being used if it
+  // does not have new content during the next NotifyPull.
+  image_->SetImage(nullptr, 0, 0, 0);
 #endif
 }
 

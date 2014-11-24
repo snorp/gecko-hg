@@ -15,7 +15,9 @@
 #include "mozilla/RefPtr.h"
 #include "mozilla/UniquePtr.h"
 #include "nsComponentManagerUtils.h"
+#if !defined(MOZILLA_XPCOMRT_API)
 #include "nsIProtocolProxyCallback.h"
+#endif
 
 #ifdef USE_FAKE_MEDIA_STREAMS
 #include "FakeMediaStreams.h"
@@ -27,7 +29,7 @@
 #include "signaling/src/jsep/JsepSession.h"
 #include "AudioSegment.h"
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 #include "Layers.h"
 #include "VideoUtils.h"
 #include "ImageLayers.h"
@@ -96,7 +98,7 @@ class Fake_AudioGenerator {
 };
 
 /* Temporary for providing video data */
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 class Fake_VideoGenerator {
  public:
   typedef mozilla::gfx::IntSize IntSize;
@@ -238,7 +240,7 @@ public:
   void StorePipeline(int aMLine,
                      mozilla::RefPtr<mozilla::MediaPipelineTransmit> aPipeline);
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   void UpdateSinkIdentity_m(nsIPrincipal* aPrincipal,
                             const mozilla::PeerIdentity* aSinkIdentity);
 #endif
@@ -276,7 +278,7 @@ class RemoteSourceStreamInfo : public SourceStreamInfo {
   void DetachTransport_s();
   void DetachMedia_m();
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   void UpdatePrincipal_m(nsIPrincipal* aPrincipal);
 #endif
 
@@ -367,7 +369,7 @@ class PeerConnectionMedia : public sigslot::has_slots<> {
   nsresult AddRemoteStream(nsRefPtr<RemoteSourceStreamInfo> aInfo);
   nsresult AddRemoteStreamHint(int aIndex, bool aIsVideo);
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // In cases where the peer isn't yet identified, we disable the pipeline (not
   // the stream, that would potentially affect others), so that it sends
   // black/silence.  Once the peer is identified, re-enable those streams.
@@ -436,6 +438,7 @@ class PeerConnectionMedia : public sigslot::has_slots<> {
       SignalEndOfLocalCandidates;
 
  private:
+#if !defined(MOZILLA_XPCOMRT_API)
   class ProtocolProxyQueryHandler : public nsIProtocolProxyCallback {
    public:
     explicit ProtocolProxyQueryHandler(PeerConnectionMedia *pcm) :
@@ -451,6 +454,7 @@ class PeerConnectionMedia : public sigslot::has_slots<> {
       RefPtr<PeerConnectionMedia> pcm_;
       virtual ~ProtocolProxyQueryHandler() {}
   };
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
   // Shutdown media transport. Must be called on STS thread.
   void ShutdownMediaTransport_s();

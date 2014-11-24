@@ -49,7 +49,7 @@ class PeerConnectionCtx {
   friend class PeerConnectionWrapper;
   friend class mozilla::dom::WebrtcGlobalInformation;
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // WebrtcGlobalInformation uses this; we put it here so we don't need to
   // create another shutdown observer class.
   mozilla::dom::Sequence<mozilla::dom::RTCStatsReportInternal>
@@ -74,7 +74,7 @@ class PeerConnectionCtx {
   static void
   EverySecondTelemetryCallback_m(nsITimer* timer, void *);
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // Telemetry Peer conection counter
   int mConnectionCounter;
 

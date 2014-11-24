@@ -32,8 +32,6 @@
 #include "mozilla/Services.h"
 #include "nsIPrefService.h"
 #include "nsIPrefBranch.h"
-#include "nsNetUtil.h"
-#include "nsIIOService.h"
 #include "nsIDNSService.h"
 #include "nsWeakReference.h"
 #include "nricectx.h"
@@ -2052,6 +2050,8 @@ public:
   uint16_t stun_port_;
 };
 
+#if !defined(MOZILLA_XPCOMRT_API)
+// FIXME XPCOMRT doesn't support nsPrefService
 static void SetIntPrefOnMainThread(nsCOMPtr<nsIPrefBranch> prefs,
   const char *pref_name,
   int new_value) {
@@ -2101,6 +2101,7 @@ class FsFrPrefClearer {
   private:
     nsCOMPtr<nsIPrefBranch> mPrefs;
 };
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
 TEST_P(SignalingTest, JustInit)
 {
@@ -4124,6 +4125,8 @@ TEST_P(SignalingTest, hugeSdp)
   a2_->CreateAnswer(OFFER_AV);
 }
 
+#if !defined(MOZILLA_XPCOMRT_API)
+// FIXME XPCOMRT doesn't support nsPrefService
 // Test max_fs and max_fr prefs have proper impact on SDP offer
 TEST_P(SignalingTest, MaxFsFrInOffer)
 {
@@ -4252,6 +4255,7 @@ TEST_P(SignalingTest, MaxFsFrCallerCodec)
   ASSERT_EQ(video_conduit->SendingMaxFs(), (unsigned short) 600);
   ASSERT_EQ(video_conduit->SendingMaxFr(), (unsigned short) 60);
 }
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
 // Validate offer with multiple video codecs
 TEST_P(SignalingTest, ValidateMultipleVideoCodecsInOffer)
@@ -4299,13 +4303,16 @@ TEST_P(SignalingTest, RemoveVP8FromOfferWithP1First)
   std::string offer = a1_->offer();
   match = offer.find("RTP/SAVPF 120");
   ASSERT_NE(std::string::npos, match);
-  offer.replace(match, strlen("RTP/SAVPF 120"), "RTP/SAVPF");
-
+  if (match != std::string::npos) {
+    offer.replace(match, strlen("RTP/SAVPF 120"), "RTP/SAVPF");
+  }
   match = offer.find("profile-level-id");
   ASSERT_NE(std::string::npos, match);
-  offer.replace(match,
-                strlen("profile-level-id"),
-                "max-foo=1234;profile-level-id");
+  if (match != std::string::npos) {
+    offer.replace(match,
+                  strlen("profile-level-id"),
+                  "max-foo=1234;profile-level-id");
+  }
 
   ParsedSDP sdpWrapper(offer);
   sdpWrapper.DeleteLines("a=rtcp-fb:120");
@@ -4349,29 +4356,36 @@ TEST_P(SignalingTest, OfferWithH264BeforeVP8)
 #ifdef H264_P0_SUPPORTED
   match = offer.find("RTP/SAVPF 120 126 97");
   ASSERT_NE(std::string::npos, match);
-  offer.replace(match,
-                strlen("RTP/SAVPF 126 120 97"),
-                "RTP/SAVPF 126 120 97");
+  if (match != std::string::npos) {
+    offer.replace(match,
+                  strlen("RTP/SAVPF 126 120 97"),
+                  "RTP/SAVPF 126 120 97");
+  }
 #else
   match = offer.find("RTP/SAVPF 120 126");
   ASSERT_NE(std::string::npos, match);
-  offer.replace(match,
-                strlen("RTP/SAVPF 126 120"),
-                "RTP/SAVPF 126 120");
+  if (match != std::string::npos) {
+    offer.replace(match,
+                  strlen("RTP/SAVPF 126 120"),
+                  "RTP/SAVPF 126 120");
+  }
 #endif
 
   match = offer.find("a=rtpmap:126 H264/90000");
   ASSERT_NE(std::string::npos, match);
-  offer.replace(match,
-                strlen("a=rtpmap:120 VP8/90000"),
-                "a=rtpmap:120 VP8/90000");
+  if (match != std::string::npos) {
+    offer.replace(match,
+                  strlen("a=rtpmap:120 VP8/90000"),
+                  "a=rtpmap:120 VP8/90000");
+  }
 
   match = offer.find("a=rtpmap:120 VP8/90000");
   ASSERT_NE(std::string::npos, match);
-  offer.replace(match,
-                strlen("a=rtpmap:126 H264/90000"),
-                "a=rtpmap:126 H264/90000");
-
+  if (match != std::string::npos) {
+    offer.replace(match,
+                  strlen("a=rtpmap:126 H264/90000"),
+                  "a=rtpmap:126 H264/90000");
+  }
   std::cout << "Modified SDP " << std::endl
             << indent(offer) << std::endl;
 

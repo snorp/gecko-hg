@@ -163,7 +163,7 @@ public:
                       mChannel(-1),
                       mCurSendCodecConfig(nullptr),
                       mCaptureDelay(150),
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
                       mLastTimestamp(0),
 #endif // MOZILLA_INTERNAL_API
                       mSamples(0),
@@ -281,7 +281,7 @@ private:
   // Current "capture" delay (really output plus input delay)
   int32_t mCaptureDelay;
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   uint32_t mLastTimestamp;
 #endif // MOZILLA_INTERNAL_API
 
