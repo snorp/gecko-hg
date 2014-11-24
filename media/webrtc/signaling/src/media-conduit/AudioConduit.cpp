@@ -18,7 +18,7 @@
 #include "nsIPrefService.h"
 #include "nsIPrefBranch.h"
 #include "nsThreadUtils.h"
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
 #include "Latency.h"
 #include "mozilla/Telemetry.h"
 #endif
@@ -400,7 +400,7 @@ WebrtcAudioConduit::ConfigureSendMediaCodec(const AudioCodecConfig* codecConfig)
     return kMediaConduitUnknownError;
   }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   // TEMPORARY - see bug 694814 comment 2
   nsresult rv;
   nsCOMPtr<nsIPrefService> prefs = do_GetService("@mozilla.org/preferences-service;1", &rv);
@@ -593,7 +593,7 @@ WebrtcAudioConduit::SendAudioFrame(const int16_t audio_data[],
     return kMediaConduitSessionNotInited;
   }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
     if (PR_LOG_TEST(GetLatencyLog(), PR_LOG_DEBUG)) {
       struct Processing insert = { TimeStamp::Now(), 0 };
       mProcessing.AppendElement(insert);
@@ -687,7 +687,7 @@ WebrtcAudioConduit::GetAudioFrame(int16_t speechData[],
     if (GetAVStats(&jitter_buffer_delay_ms,
                    &playout_buffer_delay_ms,
                    &avsync_offset_ms)) {
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
       if (avsync_offset_ms < 0) {
         Telemetry::Accumulate(Telemetry::WEBRTC_AVSYNC_WHEN_VIDEO_LAGS_AUDIO_MS,
                               -avsync_offset_ms);
@@ -705,7 +705,7 @@ WebrtcAudioConduit::GetAudioFrame(int16_t speechData[],
     mLastSyncLog = mSamples;
   }
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
   if (PR_LOG_TEST(GetLatencyLog(), PR_LOG_DEBUG)) {
     if (mProcessing.Length() > 0) {
       unsigned int now;
@@ -742,7 +742,7 @@ WebrtcAudioConduit::ReceivedRTPPacket(const void *data, int len)
 
   if(mEngineReceiving)
   {
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
     if (PR_LOG_TEST(GetLatencyLog(), PR_LOG_DEBUG)) {
       // timestamp is at 32 bits in ([1])
       struct Processing insert = { TimeStamp::Now(),
@@ -804,7 +804,7 @@ int WebrtcAudioConduit::SendPacket(int channel, const void* data, int len)
                 __FUNCTION__, channel);
     return -1;
   } else {
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_XPCOMRT_API)
     if (PR_LOG_TEST(GetLatencyLog(), PR_LOG_DEBUG)) {
       if (mProcessing.Length() > 0) {
         TimeStamp started = mProcessing[0].mTimeStamp;

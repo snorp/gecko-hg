@@ -33,6 +33,15 @@ namespace mozilla {
    class MediaSegment;
 };
 
+class Fake_VideoSink {
+ public:
+  Fake_VideoSink() {}
+  virtual void SegmentReady(mozilla::MediaSegment* aSegment) = 0;
+  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(Fake_VideoSink)
+protected:
+  virtual ~Fake_VideoSink() {}
+};
+
 class Fake_SourceMediaStream;
 
 class Fake_MediaStreamListener
@@ -80,6 +89,16 @@ class Fake_MediaStream {
   void RemoveListener(Fake_MediaStreamListener *aListener) {
     mozilla::MutexAutoLock lock(mMutex);
     mListeners.erase(aListener);
+  }
+
+  void NotifyPull(mozilla::MediaStreamGraph* graph,
+                  mozilla::StreamTime aDesiredTime) {
+
+    mozilla::MutexAutoLock lock(mMutex);
+    std::set<Fake_MediaStreamListener *>::iterator it;
+    for (it = mListeners.begin(); it != mListeners.end(); ++it) {
+      (*it)->NotifyPull(graph, aDesiredTime);
+    }
   }
 
   virtual Fake_SourceMediaStream *AsSourceStream() { return nullptr; }
@@ -131,6 +150,10 @@ class Fake_SourceMediaStream : public Fake_MediaStream {
                              mStop(false),
                              mPeriodic(new Fake_MediaPeriodic(this)) {}
 
+  void AddVideoSink(const nsRefPtr<Fake_VideoSink>& aSink) {
+    mSink  = aSink;
+  }
+
   void AddTrack(mozilla::TrackID aID, mozilla::StreamTime aStart,
                 mozilla::MediaSegment* aSegment) {
     delete aSegment;
@@ -178,6 +201,9 @@ class Fake_SourceMediaStream : public Fake_MediaStream {
     } else {
       //in the case of video segment appended, we just increase the
       //segment count.
+      if (mSink.get()) {
+        mSink->SegmentReady(aSegment);
+      }
       ++mSegmentsAdded;
     }
     return true;
@@ -213,6 +239,7 @@ class Fake_SourceMediaStream : public Fake_MediaStream {
   bool mPullEnabled;
   bool mStop;
   nsRefPtr<Fake_MediaPeriodic> mPeriodic;
+  nsRefPtr<Fake_VideoSink> mSink;
   nsCOMPtr<nsITimer> mTimer;
 };
 
@@ -241,6 +268,14 @@ public:
   const Fake_MediaStreamTrack* AsAudioStreamTrack() const
   {
     return mIsVideo? nullptr : this;
+  }
+  const uint32_t typeSize () const
+  {
+    return sizeof(Fake_MediaStreamTrack);
+  }
+  const char* typeName () const
+  {
+    return "Fake_MediaStreamTrack";
   }
 private:
   ~Fake_MediaStreamTrack() {}

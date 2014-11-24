@@ -292,7 +292,7 @@ WebrtcVideoConduit::Init(WebrtcVideoConduit *other,
 {
   CSFLogDebug(logTag,  "%s this=%p other=%p", __FUNCTION__, this, other);
 
-#ifdef MOZILLA_INTERNAL_API
+#if defined(MOZILLA_INTERNAL_API) && !defined(MOZILLA_INTERNAL_API)
   // already know we must be on MainThread barring unit test weirdness
   MOZ_ASSERT(NS_IsMainThread());
 
