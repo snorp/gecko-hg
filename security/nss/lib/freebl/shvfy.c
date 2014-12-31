@@ -17,6 +17,11 @@
 #include "hasht.h"
 #include "pqg.h"
 
+#if defined(NSS_STATIC)
+// Noop when statically linked.
+void BL_Unload() {}
+#endif
+
 /*
  * Most modern version of Linux support a speed optimization scheme where an
  * application called prelink modifies programs and shared libraries to quickly
@@ -45,6 +50,7 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+
 
 /*
  * This function returns an NSPR PRFileDesc * which the caller can read to
@@ -225,6 +231,9 @@ bl_CloseUnPrelink( PRFileDesc *file, int pid)
 static char *
 mkCheckFileName(const char *libName)
 {
+#if defined(NSS_STATIC)
+    return NULL;
+#else
     int ln_len = PORT_Strlen(libName);
     char *output = PORT_Alloc(ln_len+sizeof(SGN_SUFFIX));
     int index = ln_len + 1 - sizeof("."SHLIB_SUFFIX);
@@ -237,6 +246,7 @@ mkCheckFileName(const char *libName)
     PORT_Memcpy(output,libName,ln_len);
     PORT_Memcpy(&output[ln_len],SGN_SUFFIX,sizeof(SGN_SUFFIX));
     return output;
+#endif
 }
 
 static int

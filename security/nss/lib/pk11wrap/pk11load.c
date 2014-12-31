@@ -197,6 +197,7 @@ loser:
 /*
  * collect the steps we need to initialize a module in a single function
  */
+#define FFAIL fprintf(stderr, "%s:%d\n", __FUNCTION__, __LINE__);
 SECStatus
 secmod_ModuleInit(SECMODModule *mod, SECMODModule **reload, 
 		  PRBool* alreadyLoaded)
@@ -210,6 +211,7 @@ secmod_ModuleInit(SECMODModule *mod, SECMODModule **reload,
     }
 
     if (!mod || !alreadyLoaded) {
+FFAIL
         PORT_SetError(SEC_ERROR_INVALID_ARGS);
         return SECFailure;
     }
@@ -266,6 +268,7 @@ secmod_ModuleInit(SECMODModule *mod, SECMODModule **reload,
 		crv == CKR_NETSCAPE_CERTDB_FAILED ||
 		crv == CKR_NETSCAPE_KEYDB_FAILED) {
 	    PORT_SetError(PK11_MapError(crv));
+FFAIL
 	    return SECFailure;
 	}
 	/* If we had attempted to init a single threaded module "with"
@@ -274,6 +277,7 @@ secmod_ModuleInit(SECMODModule *mod, SECMODModule **reload,
 
 	if (!loadSingleThreadedModules) {
 	    PORT_SetError(SEC_ERROR_INCOMPATIBLE_PKCS11);
+FFAIL
 	    return SECFailure;
 	}
 	/* If we arrive here, the module failed a ThreadSafe init. */
@@ -293,6 +297,7 @@ secmod_ModuleInit(SECMODModule *mod, SECMODModule **reload,
 	}
     	if (crv != CKR_OK)  {
 	    PORT_SetError(PK11_MapError(crv));
+FFAIL
 	    return SECFailure;
 	}
     }
@@ -341,6 +346,11 @@ SECMOD_SetRootCerts(PK11SlotInfo *slot, SECMODModule *mod) {
     }
 }
 
+#if defined(NSS_STATIC)
+extern CK_RV NSC_GetFunctionList(CK_FUNCTION_LIST_PTR *pFunctionList);
+extern CK_RV FC_GetFunctionList(CK_FUNCTION_LIST_PTR *pFunctionList);
+extern char **NSC_ModuleDBFunc(unsigned long function,char *parameters, void *args);
+#else
 static const char* my_shlib_name =
     SHLIB_PREFIX"nss"SHLIB_VERSION"."SHLIB_SUFFIX;
 static const char* softoken_shlib_name =
@@ -349,12 +359,14 @@ static const PRCallOnceType pristineCallOnce;
 static PRCallOnceType loadSoftokenOnce;
 static PRLibrary* softokenLib;
 static PRInt32 softokenLoadCount;
+#endif
 
 #include "prio.h"
 #include "prprf.h"
 #include <stdio.h>
 #include "prsystem.h"
 
+#if !defined(NSS_STATIC)
 /* This function must be run only once. */
 /*  determine if hybrid platform, then actually load the DSO. */
 static PRStatus
@@ -371,6 +383,7 @@ softoken_LoadDSO( void )
   }
   return PR_FAILURE;
 }
+#endif
 
 /*
  * load a new module into our address space and initialize it.
@@ -389,6 +402,16 @@ secmod_LoadPKCS11Module(SECMODModule *mod, SECMODModule **oldModule) {
 
     /* intenal modules get loaded from their internal list */
     if (mod->internal && (mod->dllName == NULL)) {
+#ifdef NSS_STATIC
+    if (mod->isFIPS) {
+        entry = FC_GetFunctionList;
+    } else {
+        entry = NSC_GetFunctionList;
+    }
+    if (mod->isModuleDB) {
+        mod->moduleDBFunc = NSC_ModuleDBFunc;
+    }
+#else
     /*
      * Loads softoken as a dynamic library,
      * even though the rest of NSS assumes this as the "internal" module.
@@ -414,6 +437,7 @@ secmod_LoadPKCS11Module(SECMODModule *mod, SECMODModule **oldModule) {
         mod->moduleDBFunc = (CK_C_GetFunctionList) 
                     PR_FindSymbol(softokenLib, "NSC_ModuleDBFunc");
     }
+#endif
 
     if (mod->moduleDBOnly) {
         mod->loaded = PR_TRUE;
@@ -461,8 +485,9 @@ secmod_LoadPKCS11Module(SECMODModule *mod, SECMODModule **oldModule) {
     /*
      * We need to get the function list
      */
-    if ((*entry)((CK_FUNCTION_LIST_PTR *)&mod->functionList) != CKR_OK) 
+    if ((*entry)((CK_FUNCTION_LIST_PTR *)&mod->functionList) != CKR_OK) {
 								goto fail;
+    }
 
 #ifdef DEBUG_MODULE
     if (PR_TRUE) {
@@ -585,6 +610,7 @@ SECMOD_UnloadModule(SECMODModule *mod) {
      * if not, we should change this to SECFailure and move it above the
      * mod->loaded = PR_FALSE; */
     if (mod->internal && (mod->dllName == NULL)) {
+#if !defined(NSS_STATIC)
         if (0 == PR_ATOMIC_DECREMENT(&softokenLoadCount)) {
           if (softokenLib) {
               disableUnload = PR_GetEnv("NSS_DISABLE_UNLOAD");
@@ -596,6 +622,7 @@ SECMOD_UnloadModule(SECMODModule *mod) {
           }
           loadSoftokenOnce = pristineCallOnce;
         }
+#endif
 	return SECSuccess;
     }
 

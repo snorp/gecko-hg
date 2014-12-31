@@ -2201,7 +2201,6 @@ sftk_IsWeakKey(unsigned char *key,CK_KEY_TYPE key_type)
 CK_RV NSC_GetFunctionList(CK_FUNCTION_LIST_PTR *pFunctionList)
 {
     CHECK_FORK();
-
     *pFunctionList = (CK_FUNCTION_LIST_PTR) &sftk_funcList;
     return CKR_OK;
 }
@@ -2874,6 +2873,8 @@ sftk_closePeer(PRBool isFIPS)
     return;
 }
 
+#define FFAIL fprintf(stderr, "%s:%d\n", __FUNCTION__, __LINE__);
+
 /* NSC_Initialize initializes the Cryptoki library. */
 CK_RV nsc_CommonInitialize(CK_VOID_PTR pReserved, PRBool isFIPS)
 {
@@ -2891,17 +2892,20 @@ CK_RV nsc_CommonInitialize(CK_VOID_PTR pReserved, PRBool isFIPS)
 
     rv = SECOID_Init();
     if (rv != SECSuccess) {
+FFAIL
 	crv = CKR_DEVICE_ERROR;
 	return crv;
     }
 
     rv = RNG_RNGInit();         /* initialize random number generator */
     if (rv != SECSuccess) {
+FFAIL
 	crv = CKR_DEVICE_ERROR;
 	return crv;
     }
     rv = BL_Init();             /* initialize freebl engine */
     if (rv != SECSuccess) {
+FFAIL
 	crv = CKR_DEVICE_ERROR;
 	return crv;
     }

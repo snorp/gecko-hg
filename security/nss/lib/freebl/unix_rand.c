@@ -830,7 +830,11 @@ void RNG_SystemInfoForRNG(void)
     char **environ = *_NSGetEnviron();
 #endif
 #else
+#if defined(ROKU)
+    char **environ = NULL;
+#else
     extern char **environ;
+#endif
 #endif
 #ifdef BEOS
     static const char * const files[] = {
