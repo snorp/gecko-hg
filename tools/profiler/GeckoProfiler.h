@@ -63,7 +63,7 @@ enum TracingMetadata {
   TRACING_EVENT_BACKTRACE
 };
 
-#ifndef MOZ_ENABLE_PROFILER_SPS
+#if !defined(MOZ_ENABLE_PROFILER_SPS) || defined(MOZILLA_XPCOMRT_API)
 
 #include <stdint.h>
 #include <stdarg.h>
