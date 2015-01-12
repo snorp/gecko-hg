@@ -36,7 +36,9 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/VisualEventTracer.h"
 #include "mozilla/net/NeckoCommon.h"
+#if !defined(MOZILLA_XPCOMRT_API)
 #include "mozilla/net/ChildDNSService.h"
+#endif // !defined(MOZILLA_XPCOMRT_API)
 #include "mozilla/net/DNSListenerProxy.h"
 #include "mozilla/Services.h"
 
@@ -495,9 +497,11 @@ static nsDNSService *gDNSService;
 nsIDNSService*
 nsDNSService::GetXPCOMSingleton()
 {
+#if !defined(MOZILLA_XPCOMRT_API)
     if (IsNeckoChild()) {
         return ChildDNSService::GetSingleton();
     }
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
     return GetSingleton();
 }
@@ -594,10 +598,12 @@ nsDNSService::Init()
 
     nsDNSPrefetch::Initialize(this);
 
+#if !defined(MOZILLA_XPCOMRT_API)
     // Don't initialize the resolver if we're in offline mode.
     // Later on, the IO service will reinitialize us when going online.
     if (gIOService->IsOffline() && !gIOService->IsComingOnline())
         return NS_OK;
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
     nsCOMPtr<nsIIDNService> idn = do_GetService(NS_IDNSERVICE_CONTRACTID);
 
@@ -636,7 +642,9 @@ nsDNSService::Init()
         }
     }
 
+#if !defined(MOZILLA_XPCOMRT_API)
     RegisterWeakMemoryReporter(this);
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
     return rv;
 }
@@ -644,7 +652,9 @@ nsDNSService::Init()
 NS_IMETHODIMP
 nsDNSService::Shutdown()
 {
+#if !defined(MOZILLA_XPCOMRT_API)
     UnregisterWeakMemoryReporter(this);
+#endif // !defined(MOZILLA_XPCOMRT_API)
 
     nsRefPtr<nsHostResolver> res;
     {
