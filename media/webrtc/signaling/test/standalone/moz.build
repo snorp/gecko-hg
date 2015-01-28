@@ -30,6 +30,7 @@ USE_LIBS += [
     '/media/webrtc/signalingstandalone/signaling_ecc/ecc',
     'media_standalone',
     'mfbt',
+    'mozglue',
     'mtransport_standalone',
     'necko_standalone',
     'nspr',

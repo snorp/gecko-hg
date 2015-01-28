@@ -86,10 +86,12 @@ LOCAL_INCLUDES += [
 USE_LIBS += [
     '/media/webrtc/trunk/testing/gtest_gtest/gtest',
     'mfbt',
+    'mozglue',
     'mtransport_standalone',
     'necko_standalone',
     'nicer',
     'nrappkit',
+    'nspr',
     'nss',
     'unicharutil_standalone',
     'xpcomrt',
