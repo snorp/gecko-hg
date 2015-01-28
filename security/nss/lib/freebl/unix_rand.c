@@ -830,7 +830,7 @@ void RNG_SystemInfoForRNG(void)
     char **environ = *_NSGetEnviron();
 #endif
 #else
-#if defined(ROKU)
+#if defined(ROKU) || defined(LINUX)
     char **environ = NULL;
 #else
     extern char **environ;
