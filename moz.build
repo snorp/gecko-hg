@@ -74,4 +74,6 @@ if not CONFIG['JS_STANDALONE'] and CONFIG['MOZ_BUILD_APP']:
     # Bring in the configuration for the configured application.
     include('/' + CONFIG['MOZ_BUILD_APP'] + '/app.mozbuild')
 
+DIRS += ['security/nss/lib/pk11wrap/static', 'security/nss/lib/freebl/static',]
+
 include('build/templates.mozbuild')
