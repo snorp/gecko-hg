@@ -34,6 +34,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _STUN_H
 #define _STUN_H
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 #ifdef WIN32
 #include <winsock2.h>
 #else
@@ -45,7 +49,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <net/if_var.h>
 #endif
 #include <net/if_dl.h>
+#if TARGET_OS_IPHONE
+//XXX
+#else
 #include <net/if_types.h>
+#endif
 #else
 #include <linux/if.h>
 #endif
@@ -54,7 +62,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include <netinet/in.h>
 #ifndef LINUX
+#if !TARGET_OS_IPHONE
 #include <netinet/in_var.h>
+#endif
 #endif
 #include <arpa/inet.h>
 #include <netdb.h>

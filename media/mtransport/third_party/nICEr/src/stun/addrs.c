@@ -37,6 +37,10 @@ static char *RCSSTRING __UNUSED__="$Id: addrs.c,v 1.2 2008/04/28 18:21:30 ekr Ex
 #include <assert.h>
 #include <string.h>
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 #ifdef WIN32
 #include <winsock2.h>
 #include <iphlpapi.h>
@@ -51,13 +55,19 @@ static char *RCSSTRING __UNUSED__="$Id: addrs.c,v 1.2 2008/04/28 18:21:30 ekr Ex
 /* This works on linux and BSD, but not android */
 #include <sys/types.h> /* getifaddrs */
 #include <ifaddrs.h> /* getifaddrs */
+#if !TARGET_OS_IPHONE
+#endif
 #else
 #include "ifaddrs-android.h"
 #define getifaddrs android_getifaddrs
 #define freeifaddrs android_freeifaddrs
 #endif
+#if !TARGET_OS_IPHONE
+#endif
 
 #ifdef LINUX
+#if !TARGET_OS_IPHONE
+#endif
 
 #ifdef ANDROID
 /* Work around an Android NDK < r8c bug */
