@@ -8,6 +8,7 @@ from adb_b2g import ADBB2G
 from devicemanager import DeviceManager, DMError, ZeroconfListener
 from devicemanagerADB import DeviceManagerADB
 from devicemanagerSUT import DeviceManagerSUT
+from devicemanagerIOS import DeviceManagerIOS
 from droid import DroidADB, DroidSUT, DroidConnectByHWID
 
 __all__ = ['ADBError', 'ADBRootError', 'ADBTimeoutError', 'ADBProcess', 'ADBCommand', 'ADBHost',
