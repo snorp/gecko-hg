@@ -8,7 +8,11 @@
 
 #include "gfxFont.h"
 
+#ifdef MOZ_WIDGET_COCOA
 #include <ApplicationServices/ApplicationServices.h>
+#else
+#include <CoreText/CoreText.h>
+#endif
 
 class gfxMacFont;
 

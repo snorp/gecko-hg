@@ -390,6 +390,11 @@ protected:
     // canonical family name ==> family entry (unique, one name per family entry)
     FontFamilyTable mFontFamilies;
 
+#if defined(XP_DARWIN)
+    // hidden system fonts used within UI elements
+    FontFamilyTable mSystemFontFamilies;
+#endif
+
     // other family name ==> family entry (not unique, can have multiple names per
     // family entry, only names *other* than the canonical names are stored here)
     FontFamilyTable mOtherFamilyNames;

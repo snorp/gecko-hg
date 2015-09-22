@@ -549,7 +549,7 @@ gfxPlatformFontList::SystemFindFontForChar(uint32_t aCh, uint32_t aNextCh,
     gfxFontFamily *fallbackFamily = nullptr;
     fontEntry = CommonFontFallback(aCh, aNextCh, aRunScript, aStyle,
                                    &fallbackFamily);
- 
+
     // if didn't find a font, do system-wide fallback (except for specials)
     uint32_t cmapCount = 0;
     if (!fontEntry) {
@@ -582,7 +582,7 @@ gfxPlatformFontList::SystemFindFontForChar(uint32_t aCh, uint32_t aNextCh,
     } else if (aCh == 0xFFFD && fontEntry && fallbackFamily) {
         mReplacementCharFallbackFamily = fallbackFamily;
     }
- 
+
     // track system fallback time
     static bool first = true;
     int32_t intElapsed = int32_t(first ? elapsed.ToMilliseconds() :
@@ -697,6 +697,19 @@ gfxPlatformFontList::FindAndAddFamilies(const nsAString& aFamily,
     // if not found, lookup in other family names list (mostly localized names)
     if (!familyEntry) {
         familyEntry = mOtherFamilyNames.GetWeak(key);
+
+#if defined(XP_DARWIN)
+    // for system font types allow hidden system fonts to be referenced
+    if (aUseSystemFonts) {
+        if ((familyEntry = mSystemFontFamilies.GetWeak(key)) != nullptr) {
+            return CheckFamily(familyEntry);
+        }
+    }
+#endif
+
+    // lookup in other family names list (mostly localized names)
+    if ((familyEntry = mOtherFamilyNames.GetWeak(key)) != nullptr) {
+        return CheckFamily(familyEntry);
     }
 
     // if still not found and other family names not yet fully initialized,
@@ -739,7 +752,7 @@ gfxPlatformFontList::FindFontForFamily(const nsAString& aFamily, const gfxFontSt
     return nullptr;
 }
 
-void 
+void
 gfxPlatformFontList::AddOtherFamilyName(gfxFontFamily *aFamilyEntry, nsAString& aOtherFamilyName)
 {
     nsAutoString key;
@@ -1472,7 +1485,7 @@ gfxPlatformFontList::LoadFontInfo()
     return done;
 }
 
-void 
+void
 gfxPlatformFontList::CleanupLoader()
 {
     mFontFamiliesToLoad.Clear();

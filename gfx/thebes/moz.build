@@ -91,7 +91,7 @@ elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'gonk':
         'gfxFT2Utils.cpp',
         'PrintTargetPDF.cpp',
     ]
-elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
+elif CONFIG['MOZ_WIDGET_TOOLKIT'] in {'cocoa', 'uikit'}:
     EXPORTS += [
         'gfxPlatformMac.h',
         'gfxQuartzNativeDrawing.h',
@@ -230,7 +230,7 @@ UNIFIED_SOURCES += [
     'VsyncSource.cpp',
 ]
 
-if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
+if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('cocoa', 'uikit'):
     UNIFIED_SOURCES += [
         'gfxMacPlatformFontList.mm',
     ]

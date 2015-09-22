@@ -382,7 +382,7 @@ gfxFontUtils::ReadCMAPTableFormat14(const uint8_t *aBuf, uint32_t aLength,
 // For fonts with two format-4 tables, the first one (Unicode platform) is preferred on the Mac;
 // on other platforms we allow the Microsoft-platform subtable to replace it.
 
-#if defined(XP_MACOSX)
+#if defined(XP_DARWIN)
     #define acceptableFormat4(p,e,k) (((p) == PLATFORM_ID_MICROSOFT && (e) == EncodingIDMicrosoft && !(k)) || \
                                       ((p) == PLATFORM_ID_UNICODE))
 

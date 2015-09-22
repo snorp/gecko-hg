@@ -199,6 +199,7 @@ gfxCoreTextShaper::ShapeText(DrawTarget      *aDrawTarget,
         attrObj = mAttributesDictLTR;
     }
 
+#ifdef MOZ_WIDGET_COCOA
     CTFontRef tempCTFont = nullptr;
     if (IsBuggyIndicScript(aScript)) {
         // To work around buggy Indic AAT fonts shipped with OS X,
@@ -231,7 +232,8 @@ gfxCoreTextShaper::ShapeText(DrawTarget      *aDrawTarget,
         // Indic and/or ligature-disabled CTFontRef.
         ::CFRelease(tempCTFont);
         attrObj = mutableAttr;
-    }
+    } else {
+#endif
 
     // Now we can create an attributed string
     CFAttributedStringRef attrStringObj =

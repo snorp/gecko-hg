@@ -40,7 +40,7 @@
 
 #if defined(XP_WIN)
 #include "gfxWindowsPlatform.h"
-#elif defined(XP_MACOSX)
+#elif defined(XP_DARWIN)
 #include "gfxPlatformMac.h"
 #include "gfxQuartzSurface.h"
 #elif defined(MOZ_WIDGET_GTK)
@@ -676,7 +676,7 @@ gfxPlatform::Init()
 
 #if defined(XP_WIN)
     gPlatform = new gfxWindowsPlatform;
-#elif defined(XP_MACOSX)
+#elif defined(XP_DARWIN)
     gPlatform = new gfxPlatformMac;
 #elif defined(MOZ_WIDGET_GTK)
     gPlatform = new gfxPlatformGtk;

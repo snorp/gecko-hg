@@ -10,6 +10,20 @@
 #include "gfxPlatform.h"
 #include "mozilla/LookAndFeel.h"
 
+#ifdef MOZ_WIDGET_COCOA
+#include "nsCocoaFeatures.h"
+
+static inline bool OnLionOrLater()
+{
+    return nsCocoaFeatures::OnLionOrLater();
+}
+#else
+static inline bool OnLionOrLater()
+{
+    return true;
+}
+#endif
+
 namespace mozilla {
 namespace gfx {
 class DrawTarget;

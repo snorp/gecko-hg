@@ -1,4 +1,4 @@
-/* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ /* -*- Mode: C++; tab-width: 20; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -11,6 +11,7 @@
 
 #include "gfxMacPlatformFontList.h"
 #include "gfxMacFont.h"
+
 #include "gfxCoreTextShaper.h"
 #include "gfxTextRun.h"
 #include "gfxUserFontSet.h"
@@ -93,7 +94,9 @@ gfxPlatformMac::gfxPlatformMac()
         }
     }
 
+#ifdef MOZ_WIDGET_COCOA
     MacIOSurfaceLib::LoadLibrary();
+#endif
 }
 
 gfxPlatformMac::~gfxPlatformMac()
@@ -104,7 +107,9 @@ gfxPlatformMac::~gfxPlatformMac()
 gfxPlatformFontList*
 gfxPlatformMac::CreatePlatformFontList()
 {
-    gfxPlatformFontList* list = new gfxMacPlatformFontList();
+    gfxPlatformFontList* list =
+      new gfxMacPlatformFontList();
+    
     if (NS_SUCCEEDED(list->InitFontList())) {
         return list;
     }
@@ -358,6 +363,7 @@ gfxPlatformMac::ReadAntiAliasingThreshold()
     if (!useAntiAliasingThreshold)
         return threshold;
 
+#ifdef MOZ_WIDGET_COCOA
     // value set via Appearance pref panel, "Turn off text smoothing for font sizes xxx and smaller"
     CFNumberRef prefValue = (CFNumberRef)CFPreferencesCopyAppValue(CFSTR("AppleAntiAliasingThreshold"), kCFPreferencesCurrentApplication);
 
@@ -367,6 +373,7 @@ gfxPlatformMac::ReadAntiAliasingThreshold()
         }
         CFRelease(prefValue);
     }
+#endif
 
     return threshold;
 }
@@ -377,6 +384,7 @@ gfxPlatformMac::AccelerateLayersByDefault()
   return true;
 }
 
+#ifdef MOZ_WIDGET_COCOA
 // This is the renderer output callback function, called on the vsync thread
 static CVReturn VsyncCallback(CVDisplayLinkRef aDisplayLink,
                               const CVTimeStamp* aNow,
@@ -568,10 +576,12 @@ static CVReturn VsyncCallback(CVDisplayLinkRef aDisplayLink,
   display->NotifyVsync(previousVsync);
   return kCVReturnSuccess;
 }
+#endif
 
 already_AddRefed<mozilla::gfx::VsyncSource>
 gfxPlatformMac::CreateHardwareVsyncSource()
 {
+#ifdef MOZ_WIDGET_COCOA
   RefPtr<VsyncSource> osxVsyncSource = new OSXVsyncSource();
   VsyncSource::Display& primaryDisplay = osxVsyncSource->GetGlobalDisplay();
   primaryDisplay.EnableVsync();
@@ -582,6 +592,10 @@ gfxPlatformMac::CreateHardwareVsyncSource()
 
   primaryDisplay.DisableVsync();
   return osxVsyncSource.forget();
+#else
+  //TODO: can probably use CoreAnimation here
+  return gfxPlatform::CreateHardwareVsyncSource();
+#endif
 }
 
 void
@@ -589,7 +603,7 @@ gfxPlatformMac::GetPlatformCMSOutputProfile(void* &mem, size_t &size)
 {
     mem = nullptr;
     size = 0;
-
+#ifdef MOZ_WIDGET_COCOA
     CGColorSpaceRef cspace = ::CGDisplayCopyColorSpace(::CGMainDisplayID());
     if (!cspace) {
         cspace = ::CGColorSpaceCreateDeviceRGB();
@@ -619,4 +633,5 @@ gfxPlatformMac::GetPlatformCMSOutputProfile(void* &mem, size_t &size)
     }
 
     ::CFRelease(iccp);
+#endif
 }

@@ -9,7 +9,8 @@
 #include "mozilla/MemoryReporting.h"
 #include "gfxFont.h"
 #include "cairo.h"
-#include <ApplicationServices/ApplicationServices.h>
+
+#include <CoreText/CoreText.h>
 
 class MacOSFontEntry;
 
