@@ -95,8 +95,6 @@ UIKitScreenManager::GetBounds()
         gScreenBounds.height = rect.size.height * scale;
         gScreenBoundsSet = true;
     }
-    printf("UIKitScreenManager::GetBounds: %d %d %d %d\n",
-           gScreenBounds.x, gScreenBounds.y, gScreenBounds.width, gScreenBounds.height);
     return gScreenBounds;
 }
 

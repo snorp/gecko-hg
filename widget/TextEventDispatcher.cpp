@@ -141,9 +141,11 @@ TextEventDispatcher::GetState() const
 {
   nsCOMPtr<TextEventDispatcherListener> listener = do_QueryReferent(mListener);
   if (!listener) {
+    printf("SNORP: no listener?\n");
     return NS_ERROR_NOT_INITIALIZED;
   }
   if (!mWidget || mWidget->Destroyed()) {
+    printf("SNORP: no widget?\n");
     return NS_ERROR_NOT_AVAILABLE;
   }
   return NS_OK;
@@ -220,10 +222,12 @@ TextEventDispatcher::StartComposition(nsEventStatus& aStatus,
 
   nsresult rv = GetState();
   if (NS_WARN_IF(NS_FAILED(rv))) {
+    printf("SNORP: failed to get state\n");
     return rv;
   }
 
   if (NS_WARN_IF(mIsComposing)) {
+    printf("SNORP: already composing\n");
     return NS_ERROR_FAILURE;
   }
 
@@ -236,6 +240,7 @@ TextEventDispatcher::StartComposition(nsEventStatus& aStatus,
   }
   rv = DispatchEvent(mWidget, compositionStartEvent, aStatus);
   if (NS_WARN_IF(NS_FAILED(rv))) {
+    printf("SNORP: failed to dispatch event\n");
     return rv;
   }
 

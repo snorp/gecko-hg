@@ -8,12 +8,14 @@
 
 #include "nsBaseWidget.h"
 #include "gfxPoint.h"
+#include "InputData.h"
 
 #include "nsTArray.h"
 
 @class UIWindow;
 @class UIView;
-@class ChildView;
+@class GeckoWebView;
+class gfxASurface;
 
 class nsWindow :
     public nsBaseWidget
@@ -29,13 +31,18 @@ public:
     // nsIWidget
     //
 
-    virtual MOZ_MUST_USE nsresult Create(nsIWidget* aParent,
-                                         nsNativeWidget aNativeParent,
-                                         const LayoutDeviceIntRect& aRect,
-                                         nsWidgetInitData* aInitData = nullptr)
-                                         override;
-    virtual void Destroy() override;
-    NS_IMETHOD Show(bool aState) override;
+    NS_IMETHOD Create(nsIWidget* aParent,
+                      nsNativeWidget aNativeParent,
+                      const LayoutDeviceIntRect& aRect,
+                      nsWidgetInitData* aInitData = nullptr) override;
+    NS_IMETHOD Destroy() override;
+    virtual nsIWidget* GetParent() override {
+      return mParent;
+    }
+    NS_IMETHOD Show(bool aState) override {
+        mVisible = aState;
+        return NS_OK;
+    }
     NS_IMETHOD              Enable(bool aState) override {
         return NS_OK;
     }
@@ -50,6 +57,7 @@ public:
 
     virtual void SetBackgroundColor(const nscolor &aColor) override;
     virtual void* GetNativeData(uint32_t aDataType) override;
+    virtual void  SetNativeData(uint32_t aDataType, uintptr_t aVal) override;
 
     NS_IMETHOD              Move(double aX, double aY) override;
     virtual void            SetSizeMode(nsSizeMode aMode) override;
@@ -60,6 +68,9 @@ public:
     void                    ReportMoveEvent();
     void                    ReportSizeEvent();
     void                    ReportSizeModeEvent(nsSizeMode aMode);
+    NS_IMETHOD              MakeFullScreen(bool aFullScreen, nsIScreen* aTargetScreen = nullptr) override;
+
+    virtual CompositorParent* NewCompositorParent(int aSurfaceWidth, int aSurfaceHeight) override;
 
     CGFloat                 BackingScaleFactor();
     void                    BackingScaleFactorChanged();
@@ -81,23 +92,24 @@ public:
     NS_IMETHOD DispatchEvent(mozilla::WidgetGUIEvent* aEvent,
                              nsEventStatus& aStatus) override;
 
-    void WillPaintWindow();
-    bool PaintWindow(LayoutDeviceIntRegion aRegion);
-
     bool HasModalDescendents() { return false; }
 
-    //NS_IMETHOD NotifyIME(const IMENotification& aIMENotification) override;
     NS_IMETHOD_(void) SetInputContext(
                         const InputContext& aContext,
-                        const InputContextAction& aAction);
-    NS_IMETHOD_(InputContext) GetInputContext();
-    /*
-    NS_IMETHOD_(bool) ExecuteNativeKeyBinding(
-                        NativeKeyBindingsType aType,
-                        const mozilla::WidgetKeyboardEvent& aEvent,
-                        DoCommandCallback aCallback,
-                        void* aCallbackData) override;
-    */
+                        const InputContextAction& aAction) override;
+    NS_IMETHOD_(InputContext) GetInputContext() override;
+
+    NS_IMETHOD        ReparentNativeWidget(nsIWidget* aNewParent) override;
+
+    void              ConfigureAPZControllerThread() override;
+
+    void              DispatchTouchInput(mozilla::MultiTouchInput& aInput);
+
+    void              ResizeCompositor(int width, int height);
+    void              NativeViewDestroyed();
+
+    void              InsertText(const char* aText);
+    void              DeleteCharacter();
 
 protected:
     virtual ~nsWindow();
@@ -107,15 +119,12 @@ protected:
     nsresult GetCurrentOffset(uint32_t &aOffset, uint32_t &aLength);
     nsresult DeleteRange(int aOffset, int aLen);
 
-    void TearDownView();
-
-    ChildView*   mNativeView;
+    GeckoWebView*   mNativeView;
+    bool mIsFullScreen;
     bool mVisible;
     nsTArray<nsWindow*> mChildren;
     nsWindow* mParent;
     InputContext         mInputContext;
-
-    void OnSizeChanged(const mozilla::gfx::IntSize& aSize);
 
     static void DumpWindows();
     static void DumpWindows(const nsTArray<nsWindow*>& wins, int indent = 0);

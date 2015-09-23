@@ -85,6 +85,7 @@ prepare-package: stage-package
 
 make-package-internal: prepare-package make-sourcestamp-file make-buildinfo-file make-mozinfo-file
 	@echo 'Compressing...'
+	@echo "Using: $(MAKE_PACKAGE)"
 	cd $(DIST) && $(MAKE_PACKAGE)
 
 make-package: FORCE

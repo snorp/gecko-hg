@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>1F3D8F68-3585-4A62-AE81-BCA227DA77BD</string>
+	<key>IDESourceControlProjectName</key>
+	<string>GeckoEmbed</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>EA2F24BC529E13AFC4EFF99EF485F4ABFCA83508</key>
+		<string>hg::http://hg.mozilla.org/users/tmielczarek_mozilla.com/gecko-ios/</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>embedding/ios/GeckoEmbed/GeckoEmbed.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>EA2F24BC529E13AFC4EFF99EF485F4ABFCA83508</key>
+		<string>../../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>hg::http://hg.mozilla.org/users/tmielczarek_mozilla.com/gecko-ios/</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>EA2F24BC529E13AFC4EFF99EF485F4ABFCA83508</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>EA2F24BC529E13AFC4EFF99EF485F4ABFCA83508</string>
+			<key>IDESourceControlWCCName</key>
+			<string>gecko</string>
+		</dict>
+	</array>
+</dict>
+</plist>

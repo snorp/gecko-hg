@@ -93,7 +93,7 @@ static NS_DEFINE_CID(kPlacesInitCompleteCID,
 static NS_DEFINE_CID(kSessionStoreWindowRestoredCID,
   NS_SESSION_STORE_WINDOW_RESTORED_EVENT_CID);
 static NS_DEFINE_CID(kXPCOMShutdownCID,
-  NS_XPCOM_SHUTDOWN_EVENT_CID);  
+  NS_XPCOM_SHUTDOWN_EVENT_CID);
 #endif //defined(XP_WIN)
 
 using namespace mozilla;
@@ -268,16 +268,15 @@ nsAppStartup::Run(void)
 {
   NS_ASSERTION(!mRunning, "Reentrant appstartup->Run()");
 
+  #if defined(XP_MACOSX) || defined(MOZ_WIDGET_UIKIT)
+      EnterLastWindowClosingSurvivalArea();
+  #endif
+
   // If we have no windows open and no explicit calls to
   // enterLastWindowClosingSurvivalArea, or somebody has explicitly called
   // quit, don't bother running the event loop which would probably leave us
   // with a zombie process.
-
   if (!mShuttingDown && mConsiderQuitStopper != 0) {
-#ifdef XP_MACOSX
-    EnterLastWindowClosingSurvivalArea();
-#endif
-
     mRunning = true;
 
     nsresult rv = mAppShell->Run();
@@ -406,7 +405,7 @@ nsAppStartup::Quit(uint32_t aMode)
 
     if (!mAttemptingQuit) {
       mAttemptingQuit = true;
-#ifdef XP_MACOSX
+#if defined(XP_MACOSX) || defined(MOZ_WIDGET_UIKIT)
       // now even the Mac wants to quit when the last window is closed
       ExitLastWindowClosingSurvivalArea();
 #endif

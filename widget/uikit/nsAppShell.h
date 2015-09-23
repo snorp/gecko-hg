@@ -18,40 +18,50 @@
 #include <CoreFoundation/CFRunLoop.h>
 #include <UIKit/UIWindow.h>
 
-@class AppShellDelegate;
-
 class nsAppShell : public nsBaseAppShell
 {
 public:
-  NS_IMETHOD ResumeNative(void);
+  NS_IMETHOD ResumeNative(void) override;
 
   nsAppShell();
 
   nsresult Init();
 
-  NS_IMETHOD Run(void);
-  NS_IMETHOD Exit(void);
+  NS_IMETHOD Run(void) override;
+  NS_IMETHOD Exit(void) override;
   // Called by the application delegate
   void WillTerminate(void);
 
+  NS_IMETHOD Observe(nsISupports *subject, const char *topic,
+                     const char16_t *data) override;
+
   static nsAppShell* gAppShell;
-  static UIWindow* gWindow;
-  static NSMutableArray* gTopLevelViews;
+  static CFRunLoopRef gRunLoop;
 
 protected:
   virtual ~nsAppShell();
 
   static void ProcessGeckoEvents(void* aInfo);
-  virtual void ScheduleNativeEventCallback();
-  virtual bool ProcessNextNativeEvent(bool aMayWait);
+  virtual void ScheduleNativeEventCallback() override;
+  virtual bool ProcessNextNativeEvent(bool aMayWait) override;
 
   NSAutoreleasePool* mAutoreleasePool;
-  AppShellDelegate*  mDelegate;
   CFRunLoopRef       mCFRunLoop;
   CFRunLoopSourceRef mCFRunLoopSource;
 
   bool               mTerminated;
   bool               mNotifiedWillTerminate;
 };
+
+inline void RunBlockOnMainThread(void (^block)(void)) {
+  MOZ_ASSERT(nsAppShell::gRunLoop);
+  CFRunLoopPerformBlock(nsAppShell::gRunLoop, kCFRunLoopDefaultMode, block);
+  CFRunLoopWakeUp(nsAppShell::gRunLoop);
+}
+
+inline void RunBlockOnUIThread(void (^block)(void)) {
+  CFRunLoopPerformBlock(CFRunLoopGetMain(), kCFRunLoopDefaultMode, block);
+  CFRunLoopWakeUp(CFRunLoopGetMain());
+}
 
 #endif // nsAppShell_h_

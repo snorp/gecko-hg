@@ -335,6 +335,7 @@ input[type=number] > div > div, /* work around bug 946184 */
 input[type=number]::-moz-number-spin-box {
   display: none;
 }
+<<<<<<< 1a0b437caec4e68a1334141b71fbb060edfdc750
 
 /* Override accessiblecaret css in layout/style/ua.css */
 div:-moz-native-anonymous.moz-accessiblecaret > #text-overlay,

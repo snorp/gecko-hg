@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://browser/content/browser.css" type="text/css"?>
+
+<window id="main-window"
+        windowtype="navigator:browser"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <browser id="browser" type="content-primary" flex="1"/>
+  <script src="browser.js"/>
+</window>

@@ -97,8 +97,8 @@ GPATH
 ^mobile/android/gradle/.gradle
 
 # XCode project cruft
-^embedding/ios/GeckoEmbed/GeckoEmbed.xcodeproj/project.xcworkspace/xcuserdata
-^embedding/ios/GeckoEmbed/GeckoEmbed.xcodeproj/xcuserdata
+^embedding/ios/GeckoKit/GeckoKit.xcodeproj/project.xcworkspace/xcuserdata
+^embedding/ios/GeckoKit/GeckoKit.xcodeproj/xcuserdata
 
 # Ignore mozharness execution files
 ^testing/mozharness/.tox/

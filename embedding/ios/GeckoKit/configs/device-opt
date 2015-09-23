@@ -1,0 +1,5 @@
+ac_add_options --enable-application=embedding/ios
+ac_add_options --target=armv7-apple-darwin10
+
+# Until I fix this
+ac_add_options --disable-webrtc

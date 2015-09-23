@@ -13,11 +13,15 @@ def Libxul_defines():
 
 @template
 def Libxul(name):
-    if CONFIG['MOZ_WIDGET_TOOLKIT'] in ('cocoa', 'uikit'):
+    if CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
         # This is going to be a framework named "XUL", not an ordinary library named
         # "libxul.dylib"
         GeckoFramework(name, linkage=None)
         SHARED_LIBRARY_NAME = 'XUL'
+    elif CONFIG['MOZ_WIDGET_TOOLKIT'] == 'uikit':
+        GeckoFramework(name, linkage=None)
+        SHARED_LIBRARY_NAME = 'GeckoKit'
+        LDFLAGS += ['-Wl,-install_name,@rpath/GeckoKit.framework/GeckoKit', '-Wl,-headerpad_max_install_names']
     else:
         GeckoSharedLibrary(name, linkage=None)
         SHARED_LIBRARY_NAME = 'xul'
