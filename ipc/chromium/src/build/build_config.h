@@ -6,7 +6,7 @@
 
 // This file adds defines about the platform we're currently building on.
 //  Operating System:
-//    OS_WIN / OS_MACOSX / OS_LINUX / OS_POSIX (MACOSX or LINUX)
+//    OS_WIN / OS_MACOSX / OS_LINUX / OS_POSIX (MACOSX or LINUX) / OS_NACL
 //  Compiler:
 //    COMPILER_MSVC / COMPILER_GCC
 //  Processor:
@@ -16,39 +16,66 @@
 #ifndef BUILD_BUILD_CONFIG_H_
 #define BUILD_BUILD_CONFIG_H_
 
+#if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+
 // A set of macros to use for platform detection.
-#if defined(ANDROID)
+#if defined(__native_client__)
+// __native_client__ must be first, so that other OS_ defines are not set.
+#define OS_NACL 1
+#elif defined(ANDROID)
 #define OS_ANDROID 1
-#define OS_LINUX 1
 #elif defined(__APPLE__)
 #define OS_MACOSX 1
+#if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
+#define OS_IOS 1
+#endif  // defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #elif defined(__linux__)
 #define OS_LINUX 1
-#elif defined(__DragonFly__)
-#define OS_DRAGONFLY 1
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-#define OS_FREEBSD 1
-#elif defined(__NetBSD__)
-#define OS_NETBSD 1
-#elif defined(__OpenBSD__)
-#define OS_OPENBSD 1
+// include a system header to pull in features.h for glibc/uclibc macros.
+#include <unistd.h>
+#if defined(__GLIBC__) && !defined(__UCLIBC__)
+// we really are using glibc, not uClibc pretending to be glibc
+#define LIBC_GLIBC 1
+#endif
 #elif defined(_WIN32)
 #define OS_WIN 1
+#define TOOLKIT_VIEWS 1
+#elif defined(__FreeBSD__)
+#define OS_FREEBSD 1
+#elif defined(__OpenBSD__)
+#define OS_OPENBSD 1
+#elif defined(__sun)
+#define OS_SOLARIS 1
+#elif defined(__QNXNTO__)
+#define OS_QNX 1
 #else
 #error Please add support for your platform in build/build_config.h
 #endif
 
+#if defined(USE_OPENSSL) && defined(USE_NSS)
+#error Cannot use both OpenSSL and NSS
+#endif
+
 // For access to standard BSD features, use OS_BSD instead of a
 // more specific macro.
-#if defined(OS_DRAGONFLY) || defined(OS_FREEBSD)	\
-  || defined(OS_NETBSD) || defined(OS_OPENBSD)
+#if defined(OS_FREEBSD) || defined(OS_OPENBSD)
 #define OS_BSD 1
 #endif
 
-// For access to standard POSIX features, use OS_POSIX instead of a more
-// specific macro.
-#if defined(OS_MACOSX) || defined(OS_LINUX) || defined(OS_BSD)
+// For access to standard POSIXish features, use OS_POSIX instead of a
+// more specific macro.
+#if defined(OS_MACOSX) || defined(OS_LINUX) || defined(OS_FREEBSD) ||     \
+    defined(OS_OPENBSD) || defined(OS_SOLARIS) || defined(OS_ANDROID) ||  \
+    defined(OS_NACL) || defined(OS_QNX)
 #define OS_POSIX 1
+#endif
+
+// Use tcmalloc
+#if (defined(OS_WIN) || defined(OS_LINUX) || defined(OS_ANDROID)) && \
+    !defined(NO_TCMALLOC)
+#define USE_TCMALLOC 1
 #endif
 
 // Compiler detection.
@@ -68,27 +95,28 @@
 #define ARCH_CPU_X86_FAMILY 1
 #define ARCH_CPU_X86_64 1
 #define ARCH_CPU_64_BITS 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
 #elif defined(_M_IX86) || defined(__i386__)
 #define ARCH_CPU_X86_FAMILY 1
 #define ARCH_CPU_X86 1
 #define ARCH_CPU_32_BITS 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
 #elif defined(__ARMEL__)
 #define ARCH_CPU_ARM_FAMILY 1
 #define ARCH_CPU_ARMEL 1
 #define ARCH_CPU_32_BITS 1
-#define WCHAR_T_IS_UNSIGNED 1
-#elif defined(__powerpc64__)
-#define ARCH_CPU_PPC64 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
+#elif defined(__aarch64__)
+#define ARCH_CPU_ARM_FAMILY 1
+#define ARCH_CPU_ARM64 1
 #define ARCH_CPU_64_BITS 1
-#elif defined(__ppc__) || defined(__powerpc__)
-#define ARCH_CPU_PPC 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
+#elif defined(__pnacl__)
 #define ARCH_CPU_32_BITS 1
-#elif defined(__sparc64__)
-#define ARCH_CPU_SPARC 1
-#define ARCH_CPU_64_BITS 1
-#elif defined(__sparc__)
-#define ARCH_CPU_SPARC 1
-#define ARCH_CPU_32_BITS 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
+#elif defined(__MIPSEL__)
+#define ARCH_CPU_MIPS_FAMILY 1
+#define ARCH_CPU_MIPSEL 1
 #elif defined(__mips64) && defined(__LP64__)
 #define ARCH_CPU_MIPS 1
 #define ARCH_CPU_64_BITS 1
@@ -121,8 +149,29 @@
 // Type detection for wchar_t.
 #if defined(OS_WIN)
 #define WCHAR_T_IS_UTF16
-#else
+#elif defined(OS_POSIX) && defined(COMPILER_GCC) && \
+    defined(__WCHAR_MAX__) && \
+    (__WCHAR_MAX__ == 0x7fffffff || __WCHAR_MAX__ == 0xffffffff)
 #define WCHAR_T_IS_UTF32
+#elif defined(OS_POSIX) && defined(COMPILER_GCC) && \
+    defined(__WCHAR_MAX__) && \
+    (__WCHAR_MAX__ == 0x7fff || __WCHAR_MAX__ == 0xffff)
+// On Posix, we'll detect short wchar_t, but projects aren't guaranteed to
+// compile in this mode (in particular, Chrome doesn't). This is intended for
+// other projects using base who manage their own dependencies and make sure
+// short wchar works for them.
+#define WCHAR_T_IS_UTF16
+#else
+#error Please add support for your compiler in build/build_config.h
+#endif
+
+#if defined(OS_ANDROID)
+// The compiler thinks std::string::const_iterator and "const char*" are
+// equivalent types.
+#define STD_STRING_ITERATOR_IS_CHAR_POINTER
+// The compiler thinks base::string16::const_iterator and "char16*" are
+// equivalent types.
+#define BASE_STRING16_ITERATOR_IS_CHAR16_POINTER
 #endif
 
 #endif  // BUILD_BUILD_CONFIG_H_

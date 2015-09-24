@@ -6,14 +6,18 @@
 
 #include "nsString.h"
 
+#ifdef MOZ_WIDGET_COCOA
 #include "mozilla/plugins/PluginUtilsOSX.h"
+#endif
 
 namespace mozilla {
 namespace ipc {
 
 void SetThisProcessName(const char *aName)
 {
+#ifdef MOZ_WIDGET_COCOA
   mozilla::plugins::PluginUtilsOSX::SetProcessName(aName);
+#endif
 }
 
 } // namespace ipc

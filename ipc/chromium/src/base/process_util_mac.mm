@@ -5,8 +5,13 @@
 
 #include "base/process_util.h"
 
+#if !defined(OS_IOS)
 #import <Cocoa/Cocoa.h>
 #include <crt_externs.h>
+#else
+#import <Foundation/Foundation.h>
+#endif
+
 #include <spawn.h>
 #include <sys/wait.h>
 
@@ -74,6 +79,7 @@ bool LaunchApp(const std::vector<std::string>& argv,
   // Existing variables are overwritten by env_vars_to_set.
   int pos = 0;
   environment_map combined_env_vars = env_vars_to_set;
+#if !defined(OS_IOS)
   while((*_NSGetEnviron())[pos] != NULL) {
     std::string varString = (*_NSGetEnviron())[pos];
     std::string varName = varString.substr(0, varString.find_first_of('='));
@@ -83,6 +89,7 @@ bool LaunchApp(const std::vector<std::string>& argv,
     }
     pos++;
   }
+#endif
   int varsLen = combined_env_vars.size() + 1;
 
   char** vars = new char*[varsLen];

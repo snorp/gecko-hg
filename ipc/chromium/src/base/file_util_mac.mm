@@ -4,7 +4,11 @@
 
 #include "base/file_util.h"
 
+#if !defined(OS_IOS)
 #import <Cocoa/Cocoa.h>
+#else
+#import <Foundation/Foundation.h>
+#endif
 #include <copyfile.h>
 
 #include "base/file_path.h"

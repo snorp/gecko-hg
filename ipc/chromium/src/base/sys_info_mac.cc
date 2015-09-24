@@ -6,7 +6,9 @@
 
 #include "base/sys_info.h"
 
+#if !defined(OS_IOS)
 #include <CoreServices/CoreServices.h>
+#endif
 
 namespace base {
 

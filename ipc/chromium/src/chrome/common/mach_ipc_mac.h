@@ -9,9 +9,14 @@
 
 #include <mach/mach.h>
 #include <mach/message.h>
-#include <servers/bootstrap.h>
 #include <sys/types.h>
+#include <build/build_config.h>
 
+#if !defined(OS_IOS)
+#include <servers/bootstrap.h>
+#else
+#include <Foundation/Foundation.h>
+#endif
 #include "base/basictypes.h"
 
 //==============================================================================

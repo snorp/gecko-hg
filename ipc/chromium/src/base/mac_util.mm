@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "base/mac_util.h"
 
+#if !defined(OS_IOS)
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
+#else
+#import <Foundation/Foundation.h>
+#endif
 
 #include "base/file_path.h"
 #include "base/logging.h"
@@ -16,6 +21,7 @@ namespace mac_util {
 
 // Adapted from http://developer.apple.com/carbon/tipsandtricks.html#AmIBundled
 bool AmIBundled() {
+#if !defined(OS_IOS)
   ProcessSerialNumber psn = {0, kCurrentProcess};
 
   FSRef fsref;
@@ -29,6 +35,9 @@ bool AmIBundled() {
   }
 
   return info.nodeFlags & kFSNodeIsDirectoryMask;
+#else
+  return true;
+#endif
 }
 
 }  // namespace mac_util

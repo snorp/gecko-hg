@@ -61,16 +61,16 @@ MachMessage::~MachMessage() {
 
 
 u_int32_t MachMessage::GetDataLength() {
-  return EndianU32_LtoN(GetDataPacket()->data_length);
+  return CFSwapInt32LittleToHost(GetDataPacket()->data_length);
 }
 
   // The message ID may be used as a code identifying the type of message
 void MachMessage::SetMessageID(int32_t message_id) {
-  GetDataPacket()->id = EndianU32_NtoL(message_id);
+  GetDataPacket()->id = CFSwapInt32HostToLittle(message_id);
 }
 
 int32_t MachMessage::GetMessageID() {
-  return EndianU32_LtoN(GetDataPacket()->id);
+  return CFSwapInt32LittleToHost(GetDataPacket()->id);
 }
 
 
@@ -90,7 +90,7 @@ bool MachMessage::SetData(const void* data,
     return false;  // not enough space
   }
 
-  GetDataPacket()->data_length = EndianU32_NtoL(data_length);
+  GetDataPacket()->data_length = CFSwapInt32HostToLittle(data_length);
   if (data) memcpy(GetDataPacket()->data, data, data_length);
 
   // Update the Mach header with the new aligned size of the message.
@@ -211,9 +211,11 @@ ReceivePort::ReceivePort(const char *receive_port_name) {
   if (init_result_ != KERN_SUCCESS)
     return;
 
+#if !defined(OS_IOS)
   NSPort *ns_port = [NSMachPort portWithMachPort:port_];
   NSString *port_name = [NSString stringWithUTF8String:receive_port_name];
   [[NSMachBootstrapServer sharedInstance] registerPort:ns_port name:port_name];
+#endif
 }
 
 //==============================================================================
@@ -315,9 +317,11 @@ MachPortSender::MachPortSender(const char *receive_port_name) {
   if (init_result_ != KERN_SUCCESS)
     return;
 
+#if !defined(OS_IOS)
   init_result_ = bootstrap_look_up(bootstrap_port,
                     const_cast<char*>(receive_port_name),
                     &send_port_);
+#endif
 }
 
 //==============================================================================

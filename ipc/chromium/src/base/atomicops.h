@@ -30,32 +30,41 @@
 #ifndef BASE_ATOMICOPS_H_
 #define BASE_ATOMICOPS_H_
 
-#include "base/basictypes.h"
-#include "base/port.h"
+#include <cassert>  // Small C++ header which defines implementation specific
+                    // macros used to identify the STL implementation.
+#include <stdint.h>
+
+#include "base/base_export.h"
+#include "build/build_config.h"
+
+#if defined(OS_WIN) && defined(ARCH_CPU_64_BITS)
+// windows.h #defines this (only on x64). This causes problems because the
+// public API also uses MemoryBarrier at the public name for this fence. So, on
+// X64, undef it, and call its documented
+// (http://msdn.microsoft.com/en-us/library/windows/desktop/ms684208.aspx)
+// implementation directly.
+#undef MemoryBarrier
+#endif
 
 namespace base {
 namespace subtle {
 
-// Bug 1308991.  We need this for /Wp64, to mark it safe for AtomicWord casting.
-#ifndef OS_WIN
-#define __w64
-#endif
-typedef __w64 int32_t Atomic32;
+typedef int32_t Atomic32;
 #ifdef ARCH_CPU_64_BITS
+// We need to be able to go between Atomic64 and AtomicWord implicitly.  This
+// means Atomic64 and AtomicWord should be the same type on 64-bit.
+#if defined(__ILP32__) || defined(OS_NACL)
+// NaCl's intptr_t is not actually 64-bits on 64-bit!
+// http://code.google.com/p/nativeclient/issues/detail?id=1162
 typedef int64_t Atomic64;
+#else
+typedef intptr_t Atomic64;
+#endif
 #endif
 
 // Use AtomicWord for a machine-sized pointer.  It will use the Atomic32 or
 // Atomic64 routines below, depending on your architecture.
-#ifdef OS_OPENBSD
-#ifdef ARCH_CPU_64_BITS
-typedef Atomic64 AtomicWord;
-#else
-typedef Atomic32 AtomicWord;
-#endif // ARCH_CPU_64_BITS
-#else
 typedef intptr_t AtomicWord;
-#endif // OS_OPENBSD
 
 // Atomically execute:
 //      result = *ptr;
@@ -128,9 +137,9 @@ void Release_Store(volatile Atomic64* ptr, Atomic64 value);
 Atomic64 NoBarrier_Load(volatile const Atomic64* ptr);
 Atomic64 Acquire_Load(volatile const Atomic64* ptr);
 Atomic64 Release_Load(volatile const Atomic64* ptr);
-#endif  // CPU_ARCH_64_BITS
+#endif  // ARCH_CPU_64_BITS
 
-}  // namespace base::subtle
+}  // namespace subtle
 }  // namespace base
 
 // Include our platform specific implementation.
