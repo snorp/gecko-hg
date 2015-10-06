@@ -671,10 +671,7 @@ void MessagePumpUIApplication::Quit() {
 }
 
 void MessagePumpUIApplication::Attach(Delegate* delegate) {
-  //DCHECK(!run_loop_);
-  //run_loop_ = new RunLoop();
-  //CHECK(run_loop_->BeforeRun());
-  //SetDelegate(delegate);
+  set_delegate(delegate);
 }
 
 #else

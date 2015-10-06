@@ -205,6 +205,19 @@ void MessageLoop::Run() {
   RunHandler();
 }
 
+void MessageLoop::Attach() {
+  state_ = new RunState();
+#ifdef OS_IOS
+  pump_->Attach(this);
+#endif
+}
+
+void MessageLoop::RunAllPending() {
+  AutoRunState save_state(this);
+  state_->quit_received = true;  // Means run until we would otherwise block.
+  RunHandler();
+}
+
 // Runs the loop in two different SEH modes:
 // enable_SEH_restoration_ = false : any unhandled exception goes to the last
 // one that calls SetUnhandledExceptionFilter().

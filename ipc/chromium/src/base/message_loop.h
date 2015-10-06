@@ -122,6 +122,13 @@ public:
   // Run the message loop.
   void Run();
 
+  // Attach to the current 'native' message loop
+  void Attach();
+
+  // Process all pending tasks, windows messages, etc., but don't wait/sleep.
+  // Return as soon as all items that can be run are taken care of.
+  void RunAllPending();
+
   // Signals the Run method to return after it is done processing all pending
   // messages.  This method may only be called on the same thread that called
   // Run, and Run must still be on the call stack.

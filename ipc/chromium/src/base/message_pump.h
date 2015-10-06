@@ -134,6 +134,8 @@ class MessagePump {
     return nullptr;
   }
 
+  virtual void Attach(Delegate* delegate) {}
+
 protected:
   virtual ~MessagePump() {};
 };

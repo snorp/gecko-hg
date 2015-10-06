@@ -74,6 +74,8 @@ class MessagePumpCFRunLoopBase : public MessagePump {
   int nesting_level() const { return nesting_level_; }
   int run_nesting_level() const { return run_nesting_level_; }
 
+  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
+
   // Return an autorelease pool to wrap around any work being performed.
   // In some cases, CreateAutoreleasePool may return nil intentionally to
   // preventing an autorelease pool from being created, allowing any
@@ -259,7 +261,7 @@ class MessagePumpUIApplication : public MessagePumpCFRunLoopBase {
 
   // This message pump can not spin the main message loop directly.  Instead,
   // call |Attach()| to set up a delegate.  It is an error to call |Run()|.
-  virtual void Attach(Delegate* delegate);
+  virtual void Attach(Delegate* delegate) override;
 
  private:
   //RunLoop* run_loop_;
