@@ -496,6 +496,10 @@ CheckArg(const char* aArg, bool aCheckOSInt = false, const char **aParam = nullp
 {
   MOZ_ASSERT(gArgv, "gArgv must be initialized before CheckArg()");
 
+  if (gArgc < 2) {
+    return ARG_NONE;
+  }
+
   char **curarg = gArgv + 1; // skip argv[0]
   ArgResult ar = ARG_NONE;
 
