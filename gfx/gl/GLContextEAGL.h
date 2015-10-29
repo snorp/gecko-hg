@@ -12,6 +12,8 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <OpenGLES/EAGL.h>
 
+class nsIWidget;
+
 namespace mozilla {
 namespace gl {
 

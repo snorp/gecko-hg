@@ -9,11 +9,15 @@
 #include "AppleDecoderModule.h"
 #include "AppleVTDecoder.h"
 #include "AppleVTLinker.h"
-#include "MacIOSurfaceImage.h"
 #include "MediaPrefs.h"
+#include "mozilla/Preferences.h"
 #include "mozilla/DebugOnly.h"
 #include "mozilla/Logging.h"
 #include "mozilla/gfx/gfxVars.h"
+
+#ifdef MOZ_WIDGET_COCOA
+#include "MacIOSurfaceImage.h"
+#endif
 
 namespace mozilla {
 
@@ -39,9 +43,16 @@ AppleDecoderModule::Init()
     return;
   }
 
+  Preferences::AddBoolVarCache(&sForceVDA, "media.apple.forcevda", false);
+
+#ifdef MOZ_WIDGET_COCOA
   // Ensure IOSurface framework is loaded.
   MacIOSurfaceLib::LoadLibrary();
   const bool loaded = MacIOSurfaceLib::isInit();
+#else
+  // No MacIOSurface on iOS (it's private)
+  const bool loaded = true;
+#endif
 
   // dlopen CoreMedia.framework if it's available.
   sIsCoreMediaAvailable = AppleCMLinker::Link();
