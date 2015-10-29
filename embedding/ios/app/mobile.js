@@ -100,3 +100,7 @@ pref("media.mediasource.enabled", true);
 // Enable hardware-accelerated Skia canvas
 pref("gfx.canvas.azure.backends", "skia");
 pref("gfx.canvas.azure.accelerated", true);
+
+pref("javascript.options.baselinejit",      false);
+pref("javascript.options.ion",              false);
+pref("javascript.options.asmjs",            false);
