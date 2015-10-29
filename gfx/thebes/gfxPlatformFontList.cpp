@@ -700,10 +700,8 @@ gfxPlatformFontList::FindAndAddFamilies(const nsAString& aFamily,
 
 #if defined(XP_DARWIN)
     // for system font types allow hidden system fonts to be referenced
-    if (aUseSystemFonts) {
-        if ((familyEntry = mSystemFontFamilies.GetWeak(key)) != nullptr) {
-            return CheckFamily(familyEntry);
-        }
+    if ((familyEntry = mSystemFontFamilies.GetWeak(key)) != nullptr) {
+        return CheckFamily(familyEntry);
     }
 #endif
 

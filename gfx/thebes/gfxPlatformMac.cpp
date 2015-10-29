@@ -9,7 +9,11 @@
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/MacIOSurface.h"
 
+#ifdef MOZ_WIDGET_COCOA
 #include "gfxMacPlatformFontList.h"
+#else
+#include "gfxCFPlatformFontList.h"
+#endif
 #include "gfxMacFont.h"
 
 #include "gfxCoreTextShaper.h"
@@ -109,7 +113,7 @@ gfxPlatformMac::CreatePlatformFontList()
 {
     gfxPlatformFontList* list =
       new gfxMacPlatformFontList();
-    
+
     if (NS_SUCCEEDED(list->InitFontList())) {
         return list;
     }
@@ -346,9 +350,11 @@ gfxPlatformMac::LookupSystemFont(mozilla::LookAndFeel::FontID aSystemFontID,
                                  gfxFontStyle& aFontStyle,
                                  float aDevPixPerCSSPixel)
 {
+#ifdef MOZ_WIDGET_COCOA
     gfxMacPlatformFontList* pfl = gfxMacPlatformFontList::PlatformFontList();
     return pfl->LookupSystemFont(aSystemFontID, aSystemFontName, aFontStyle,
                                  aDevPixPerCSSPixel);
+#endif
 }
 
 uint32_t
