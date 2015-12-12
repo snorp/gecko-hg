@@ -19,8 +19,7 @@ pref("gfx.color_management.mode", 0);
 
 pref("dom.meta-viewport.enabled", true);
 
-pref("touchcaret.enabled", true);
-pref("selectioncaret.enabled", true);
+pref("layout.accessiblecaret.enabled", true);
 
 /* cache prefs */
 pref("browser.cache.disk.enable", true);
