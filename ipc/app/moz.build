@@ -74,7 +74,7 @@ if CONFIG['MOZ_SANDBOX'] and CONFIG['OS_TARGET'] in ('Linux', 'Android'):
     if '-flto' in CONFIG['OS_CXXFLAGS'] and not CONFIG['CLANG_CXX']:
         LDFLAGS += ['--param lto-partitions=1']
 
-if CONFIG['MOZ_SANDBOX'] and CONFIG['OS_TARGET'] == 'Darwin':
+if CONFIG['MOZ_SANDBOX'] and CONFIG['MOZ_WIDGET_TOOLKIT'] == 'cocoa':
     # For sandbox includes and the include dependencies those have
     LOCAL_INCLUDES += [
         '/security/sandbox/chromium',

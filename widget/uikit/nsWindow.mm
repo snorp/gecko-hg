@@ -105,11 +105,7 @@ nsWindow::Create(nsIWidget* aParent,
 
   LOG("nsWindow[%p]::Create %p/%p [%d %d %d %d]", (void*)this, (void*)parent, (void*)nativeParent, aRect.x, aRect.y, aRect.width, aRect.height);
 
-  mBounds = aRect;
-
-  Inherited::BaseCreate(aParent,
-                        LayoutDeviceIntRect::FromUnknownRect(mBounds),
-                        aInitData);
+  mBounds = aRect.ToUnknownRect();
 
   if (nativeParent && !nativeParent.widget) {
     nativeParent.widget = this;
@@ -122,7 +118,9 @@ nsWindow::Create(nsIWidget* aParent,
   mWindowType = eWindowType_toplevel;
   mBorderStyle = eBorderStyle_default;
 
-  Inherited::BaseCreate(parent, mBounds, aInitData);
+  Inherited::BaseCreate(aParent,
+                        LayoutDeviceIntRect::FromUnknownRect(mBounds),
+                        aInitData);
 
   NS_ASSERTION(IsTopLevel() || parent, "non top level window doesn't have a parent!");
 
@@ -360,7 +358,7 @@ nsWindow::SetSizeMode(nsSizeMode aMode)
 }
 
 NS_IMETHODIMP
-nsWindow::Invalidate(const nsIntRect &aRect)
+nsWindow::Invalidate(const LayoutDeviceIntRect &aRect)
 {
   return NS_OK;
 }
@@ -420,7 +418,7 @@ void nsWindow::ReportSizeEvent()
 LayoutDeviceIntRect
 nsWindow::GetScreenBounds()
 {
-  aRect = mBounds;
+  aRect = LayoutDeviceIntRect::FromUnknownRect(mBounds);
   return NS_OK;
 }
 
@@ -474,7 +472,6 @@ NS_IMETHODIMP_(mozilla::widget::InputContext)
 nsWindow::GetInputContext()
 {
   InputContext context = mInputContext;
-  context.mNativeIMEContext = nullptr;
   context.mIMEState.mOpen = IMEState::OPEN_STATE_NOT_SUPPORTED;
   return context;
 }
@@ -520,9 +517,6 @@ void* nsWindow::GetNativeData(uint32_t aDataType)
     retVal = 0;
     break;
 
-  case NS_NATIVE_PLUGIN_PORT:
-    // not implemented
-    break;
   case NS_NATIVE_PLUGIN_PORT:
     // not implemented
     break;

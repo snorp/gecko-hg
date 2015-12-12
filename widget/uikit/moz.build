@@ -21,8 +21,8 @@ EXPORTS += [
 ]
 
 FINAL_LIBRARY = 'xul'
-GENERATED_INCLUDES += ['/build']
 LOCAL_INCLUDES += [
+    '!/build', # for application.ini.h
     '/docshell/base', # for nsDocShell.h
     '/widget',
 ]
