@@ -338,10 +338,11 @@
 					};
 					F3F36F7F1BBF279000E2E967 = {
 						CreatedOnToolsVersion = 7.0;
+						DevelopmentTeam = GCDQ9BX36A;
 					};
 					F3F36F8C1BBF2B7200E2E967 = {
 						CreatedOnToolsVersion = 7.0;
-						DevelopmentTeam = 43AQ936H96;
+						DevelopmentTeam = GCDQ9BX36A;
 					};
 				};
 			};
@@ -727,6 +728,7 @@
 			buildSettings = {
 				"ARCHS[sdk=iphonesimulator*]" = x86_64;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
@@ -764,6 +766,7 @@
 			buildSettings = {
 				"ARCHS[sdk=iphonesimulator*]" = x86_64;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
