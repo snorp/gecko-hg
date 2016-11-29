@@ -76,7 +76,7 @@ if test -n "$ios_sdk"; then
    ios_sdk_path=`xcrun --sdk $ios_sdk --show-sdk-path 2>/dev/null`
    _ret=$?
    if test $_ret -ne 0; then
-      AC_MSG_ERROR([iOS SDK '$ios_sdk' could not be found.])
+      AC_MSG_WARN([iOS SDK '$ios_sdk' could not be found.])
    fi
    MOZ_IOS=1
    export HOST_CC=clang
@@ -92,15 +92,17 @@ if test -n "$ios_sdk"; then
                 ;;
    esac
    ARGS=" $ARGS -isysroot $ios_sdk_path $ios_target_arg"
+   AC_MSG_WARN([SNORP: ARGS=$ARGS])
    # Now find our tools
    MOZ_IOS_PATH_PROG(CC, clang, $ARGS)
    MOZ_IOS_PATH_PROG(CXX, clang++, $ARGS)
    export CPP="$CC -E"
    export LD="$CXX"
    MOZ_IOS_PATH_PROG(AR)
-   MOZ_IOS_PATH_PROG(AS, as, $ARGS)
+   dnl MOZ_IOS_PATH_PROG(AS, as, "-v $ARGS")
    MOZ_IOS_PATH_PROG(OTOOL)
    MOZ_IOS_PATH_PROG(STRIP)
+   AC_MSG_WARN([SNORP: done with iOS toolchain config])
    export PKG_CONFIG_PATH=${ios_sdk_path}/usr/lib/pkgconfig/
 fi
 

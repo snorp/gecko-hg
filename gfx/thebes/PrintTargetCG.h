@@ -6,7 +6,10 @@
 #ifndef MOZILLA_GFX_PRINTTARGETCG_H
 #define MOZILLA_GFX_PRINTTARGETCG_H
 
+#ifndef MOZ_WIDGET_UIKIT
 #include <Carbon/Carbon.h>
+#endif
+
 #include "PrintTarget.h"
 
 namespace mozilla {

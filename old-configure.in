@@ -186,7 +186,8 @@ fi
 
 case "$target" in
 *-apple-darwin*)
-    MOZ_IOS_SDK
+    MOZ_IOS=1
+    AC_SUBST(MOZ_IOS)
     ;;
 esac
 
@@ -639,13 +640,15 @@ if test "$GNU_CC"; then
     DSO_CFLAGS=''
     DSO_PIC_CFLAGS='-fPIC'
     ASFLAGS="$ASFLAGS -fPIC"
-    AC_MSG_CHECKING([for --noexecstack option to as])
-    _SAVE_CFLAGS=$CFLAGS
-    CFLAGS="$CFLAGS -Wa,--noexecstack"
-    AC_TRY_COMPILE(,,AC_MSG_RESULT([yes])
-                     [ASFLAGS="$ASFLAGS -Wa,--noexecstack"],
-                     AC_MSG_RESULT([no]))
-    CFLAGS=$_SAVE_CFLAGS
+    if test -z "$CLANG_CC"; then
+        AC_MSG_CHECKING([for --noexecstack option to as])
+        _SAVE_CFLAGS=$CFLAGS
+        CFLAGS="$CFLAGS -Wa,--noexecstack"
+        AC_TRY_COMPILE(,,AC_MSG_RESULT([yes])
+                         [ASFLAGS="$ASFLAGS -Wa,--noexecstack"],
+                         AC_MSG_RESULT([no]))
+        CFLAGS=$_SAVE_CFLAGS
+    fi
     AC_MSG_CHECKING([for -z noexecstack option to ld])
     _SAVE_LDFLAGS=$LDFLAGS
     LDFLAGS="$LDFLAGS -Wl,-z,noexecstack"
@@ -5708,6 +5711,11 @@ fi
 
 if test "$MOZ_WIDGET_TOOLKIT" = "cocoa"; then
     USE_ICU=1
+fi
+
+if test "$MOZ_WIDGET_TOOLKIT" = "uikit"; then
+    USE_ICU=0
+    _INTL_API=no
 fi
 
 MOZ_CONFIG_ICU()

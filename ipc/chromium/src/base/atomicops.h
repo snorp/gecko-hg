@@ -49,7 +49,7 @@
 namespace base {
 namespace subtle {
 
-typedef int32_t Atomic32;
+typedef long Atomic32;
 #ifdef ARCH_CPU_64_BITS
 // We need to be able to go between Atomic64 and AtomicWord implicitly.  This
 // means Atomic64 and AtomicWord should be the same type on 64-bit.

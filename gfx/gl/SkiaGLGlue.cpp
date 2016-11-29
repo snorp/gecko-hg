@@ -107,11 +107,11 @@ glGetString_mozilla(GLContext* aContext, GrGLenum aName)
                 strcat(extensionsString, "GL_EXT_texture_format_BGRA8888 ");
             }
 
-            if (sGLContext.get()->IsExtensionSupported(GLContext::APPLE_texture_format_BGRA8888)) {
+            if (aContext->IsExtensionSupported(GLContext::APPLE_texture_format_BGRA8888)) {
                 strcat(extensionsString, "GL_APPLE_texture_format_BGRA8888 ");
             }
 
-            if (sGLContext.get()->IsExtensionSupported(GLContext::EXT_packed_depth_stencil)) {
+            if (aContext->IsExtensionSupported(GLContext::EXT_packed_depth_stencil)) {
                 strcat(extensionsString, "GL_EXT_packed_depth_stencil ");
             }
 

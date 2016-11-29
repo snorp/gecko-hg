@@ -49,7 +49,7 @@ public:
 
     NS_DECL_NSISCREENMANAGER
 
-    static LayoutDeviceIntRect GetBounds();
+    static nsIntRect GetBounds();
 
 private:
     virtual ~UIKitScreenManager () {}

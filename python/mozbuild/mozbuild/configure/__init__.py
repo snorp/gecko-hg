@@ -219,6 +219,8 @@ class ConfigureSandbox(dict):
 
         code = compile(source, path, 'exec')
 
+        print('SNORP: running included file `%s`' % path)
+
         exec_(code, self)
 
         self._paths.pop(-1)

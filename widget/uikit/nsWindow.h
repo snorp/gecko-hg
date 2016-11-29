@@ -35,7 +35,7 @@ public:
                       nsNativeWidget aNativeParent,
                       const LayoutDeviceIntRect& aRect,
                       nsWidgetInitData* aInitData = nullptr) override;
-    NS_IMETHOD Destroy() override;
+    void Destroy() override;
     virtual nsIWidget* GetParent() override {
       return mParent;
     }
@@ -60,17 +60,13 @@ public:
     virtual void  SetNativeData(uint32_t aDataType, uintptr_t aVal) override;
 
     NS_IMETHOD              Move(double aX, double aY) override;
-    virtual void            SetSizeMode(nsSizeMode aMode) override;
     void                    EnteredFullScreen(bool aFullScreen);
     NS_IMETHOD              Resize(double aWidth, double aHeight, bool aRepaint) override;
     NS_IMETHOD              Resize(double aX, double aY, double aWidth, double aHeight, bool aRepaint) override;
-    virtual LayoutDeviceIntRect GetScreenBounds() override;
     void                    ReportMoveEvent();
     void                    ReportSizeEvent();
     void                    ReportSizeModeEvent(nsSizeMode aMode);
     NS_IMETHOD              MakeFullScreen(bool aFullScreen, nsIScreen* aTargetScreen = nullptr) override;
-
-    virtual CompositorParent* NewCompositorParent(int aSurfaceWidth, int aSurfaceHeight) override;
 
     CGFloat                 BackingScaleFactor();
     void                    BackingScaleFactorChanged();
@@ -98,8 +94,6 @@ public:
                         const InputContext& aContext,
                         const InputContextAction& aAction) override;
     NS_IMETHOD_(InputContext) GetInputContext() override;
-
-    NS_IMETHOD        ReparentNativeWidget(nsIWidget* aNewParent) override;
 
     void              ConfigureAPZControllerThread() override;
 

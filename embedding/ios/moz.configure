@@ -4,6 +4,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-imply_option('MOZ_PLACES', True)
-imply_option('MOZ_SERVICES_HEALTHREPORT', True)
-imply_option('MOZ_SERVICES_SYNC', True)
+
+@depends(target)
+def check_target(target):
+    if target.os != 'iOS':
+        log.error('You must specify --target=armv7-apple-ios when building embedding/ios')
+        die()
+
+include('../../toolkit/moz.configure')

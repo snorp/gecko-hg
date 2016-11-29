@@ -37,7 +37,8 @@
 
 #include "mozilla/layers/APZCTreeManager.h"
 #include "mozilla/layers/APZThreadUtils.h"
-#include "mozilla/layers/CompositorParent.h"
+#include "mozilla/layers/CompositorBridgeParent.h"
+#include "mozilla/layers/CompositorSession.h"
 #include "mozilla/BasicEvents.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/TextEvents.h"
@@ -105,7 +106,7 @@ nsWindow::Create(nsIWidget* aParent,
 
   LOG("nsWindow[%p]::Create %p/%p [%d %d %d %d]", (void*)this, (void*)parent, (void*)nativeParent, aRect.x, aRect.y, aRect.width, aRect.height);
 
-  mBounds = aRect.ToUnknownRect();
+  mBounds = aRect;
 
   if (nativeParent && !nativeParent.widget) {
     nativeParent.widget = this;
@@ -119,7 +120,6 @@ nsWindow::Create(nsIWidget* aParent,
   mBorderStyle = eBorderStyle_default;
 
   Inherited::BaseCreate(aParent,
-                        LayoutDeviceIntRect::FromUnknownRect(mBounds),
                         aInitData);
 
   NS_ASSERTION(IsTopLevel() || parent, "non top level window doesn't have a parent!");
@@ -146,8 +146,6 @@ nsWindow::Destroy()
   }
 
   nsBaseWidget::OnDestroy();
-
-  return NS_OK;
 }
 
 NS_IMETHODIMP
@@ -162,26 +160,6 @@ nsWindow::ConfigureChildren(const nsTArray<nsIWidget::Configuration>& config)
                      false);
   }
 
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsWindow::ReparentNativeWidget(nsIWidget* aNewParent)
-{
-  return NS_ERROR_NOT_IMPLEMENTED;
-}
-
-NS_IMETHODIMP
-nsWindow::SetModal(bool aModal)
-{
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsWindow::ConstrainPosition(bool aAllowSlop,
-              int32_t *aX,
-              int32_t *aY)
-{
   return NS_OK;
 }
 
@@ -244,9 +222,9 @@ NS_IMETHODIMP nsWindow::Resize(double aWidth, double aHeight, bool aRepaint)
 void
 nsWindow::ResizeCompositor(int width, int height)
 {
-  if (!mCompositorParent) {
+  if (!mCompositorSession) {
     for (nsWindow* child : mChildren) {
-      if (child->mCompositorParent) {
+      if (child->mCompositorSession) {
         child->ResizeCompositor(width, height);
         return;
       }
@@ -256,7 +234,8 @@ nsWindow::ResizeCompositor(int width, int height)
     return;
   }
 
-  mCompositorParent->ScheduleResumeOnCompositorThread(width, height);
+  CompositorBridgeParent* compositor = mCompositorSession->GetInProcessBridge();
+  compositor->ScheduleResumeOnCompositorThread(width, height);
 }
 
 void
@@ -282,10 +261,10 @@ nsWindow::InsertText(const char* aText)
     WidgetKeyboardEvent pressEvent(true, eKeyPress, this);
     pressEvent.mKeyNameIndex = KEY_NAME_INDEX_USE_STRING;
     pressEvent.mCodeNameIndex = CODE_NAME_INDEX_UNKNOWN;
-    pressEvent.isChar = (c >= ' ');
-    pressEvent.charCode = pressEvent.isChar ? c : 0;
-    pressEvent.keyCode = pressEvent.isChar ? 0 : keyCode;
-    pressEvent.time = PR_IntervalNow();
+    pressEvent.mIsChar = (c >= ' ');
+    pressEvent.mCharCode = pressEvent.mIsChar ? c : 0;
+    pressEvent.mKeyCode = pressEvent.mIsChar ? 0 : keyCode;
+    pressEvent.mTime = PR_IntervalNow();
 
     DispatchEvent(&pressEvent, status);
   }
@@ -298,28 +277,22 @@ nsWindow::DeleteCharacter()
   WidgetKeyboardEvent pressEvent(true, eKeyPress, this);
   pressEvent.mKeyNameIndex = KEY_NAME_INDEX_USE_STRING;
   pressEvent.mCodeNameIndex = CODE_NAME_INDEX_UNKNOWN;
-  pressEvent.isChar = false;
-  pressEvent.charCode = 0;
-  pressEvent.keyCode = NS_VK_BACK;
-  pressEvent.time = PR_IntervalNow();
+  pressEvent.mIsChar = false;
+  pressEvent.mCharCode = 0;
+  pressEvent.mKeyCode = NS_VK_BACK;
+  pressEvent.mTime = PR_IntervalNow();
 
   DispatchEvent(&pressEvent, status);
 }
 
+/*
 CompositorParent*
 nsWindow::NewCompositorParent(int aSurfaceWidth, int aSurfaceHeight)
 {
   // We override this to set mUseExternalSurfaceSize to true in the CompositorParent
   return new CompositorParent(this, true, aSurfaceWidth, aSurfaceHeight);
 }
-
-NS_IMETHODIMP
-nsWindow::PlaceBehind(nsTopLevelWidgetZPlacement aPlacement,
-            nsIWidget *aWidget,
-            bool aActivate)
-{
-  return NS_OK;
-}
+*/
 
 NS_IMETHODIMP
 nsWindow::MakeFullScreen(bool aFullScreen, nsIScreen* aTargetScreen)
@@ -339,22 +312,6 @@ nsWindow::MakeFullScreen(bool aFullScreen, nsIScreen* aTargetScreen)
     }
   });
   return NS_OK;
-}
-
-NS_IMETHODIMP
-nsWindow::SetSizeMode(nsSizeMode aMode)
-{
-  if (aMode == static_cast<int32_t>(mSizeMode)) {
-    return NS_OK;
-  }
-
-  nsresult rv = NS_OK;
-  mSizeMode = static_cast<nsSizeMode>(aMode);
-  if (aMode == nsSizeMode_Fullscreen) {
-    rv = MakeFullScreen(true);
-  }
-  ReportSizeModeEvent(aMode);
-  return rv;
 }
 
 NS_IMETHODIMP
@@ -409,17 +366,9 @@ void nsWindow::ReportSizeModeEvent(nsSizeMode aMode)
 void nsWindow::ReportSizeEvent()
 {
   if (mWidgetListener) {
-    LayoutDeviceIntRect innerBounds;
-    GetClientBounds(innerBounds);
+    LayoutDeviceIntRect innerBounds = GetClientBounds();
     mWidgetListener->WindowResized(this, innerBounds.width, innerBounds.height);
   }
-}
-
-LayoutDeviceIntRect
-nsWindow::GetScreenBounds()
-{
-  aRect = LayoutDeviceIntRect::FromUnknownRect(mBounds);
-  return NS_OK;
 }
 
 LayoutDeviceIntPoint nsWindow::WidgetToScreenOffset()

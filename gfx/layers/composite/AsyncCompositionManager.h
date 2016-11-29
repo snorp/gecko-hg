@@ -248,7 +248,7 @@ private:
 
   TimeStamp mPreviousFrameTimeStamp;
 
-#ifdef MOZ_WIDGET_ANDROID || defined(MOZ_WIDGET_UIKIT)
+#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_UIKIT)
   // The following two fields are only needed on Fennec with C++ APZ, because
   // then we need to reposition the gecko scrollbar to deal with the
   // dynamic toolbar shifting content around.

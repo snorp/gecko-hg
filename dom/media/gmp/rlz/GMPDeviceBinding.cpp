@@ -143,6 +143,12 @@ static void SecureMemset(void* start, uint8_t value, size_t size)
 }
 #endif
 
+#ifdef MOZ_WIDGET_UIKIT
+#ifdef HASH_NODE_ID_WITH_DEVICE_ID
+#undef HASH_NODE_ID_WITH_DEVICE_ID
+#endif
+#endif
+
 bool
 CalculateGMPDeviceId(char* aOriginSalt,
                      uint32_t aOriginSaltLen,

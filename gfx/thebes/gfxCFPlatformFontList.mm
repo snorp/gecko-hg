@@ -766,7 +766,7 @@ myCTFontCollectionCopyFontAttribute(CTFontCollectionRef aCollection,
 }
 
 nsresult
-gfxMacPlatformFontList::InitFontList()
+gfxMacPlatformFontList::InitFontListForPlatform()
 {
     typedef CFArrayRef (*CTFontCollectionCopyFontAttributePtr)
         (CTFontCollectionRef, CFStringRef, CTFontCollectionCopyOptions);
@@ -813,7 +813,7 @@ gfxMacPlatformFontList::InitFontList()
 void
 gfxMacPlatformFontList::InitSingleFaceList()
 {
-    nsAutoTArray<nsString, 10> singleFaceFonts;
+    AutoTArray<nsString, 10> singleFaceFonts;
     gfxFontUtils::GetPrefsFontList("font.single-face-list", singleFaceFonts);
 
     uint32_t numFonts = singleFaceFonts.Length();
@@ -882,7 +882,7 @@ gfxMacPlatformFontList::RegisteredFontsChangedNotificationCallback(CFNotificatio
 
 gfxFontEntry*
 gfxMacPlatformFontList::GlobalFontFallback(const uint32_t aCh,
-                                           int32_t aRunScript,
+                                           Script aRunScript,
                                            const gfxFontStyle* aMatchStyle,
                                            uint32_t& aCmapCount,
                                            gfxFontFamily** aMatchedFamily)
@@ -972,7 +972,7 @@ gfxMacPlatformFontList::GlobalFontFallback(const uint32_t aCh,
 }
 
 gfxFontFamily*
-gfxMacPlatformFontList::GetDefaultFont(const gfxFontStyle* aStyle)
+gfxMacPlatformFontList::GetDefaultFontForPlatform(const gfxFontStyle* aStyle)
 {
     // Create a font descriptor from an empty attributes dictionary.
     CFDictionaryRef attributes =

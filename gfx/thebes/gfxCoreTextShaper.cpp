@@ -293,9 +293,11 @@ gfxCoreTextShaper::ShapeText(DrawTarget      *aDrawTarget,
         }
     }
 
+#ifdef MOZ_WIDGET_COCOA
     if (mutableAttr) {
         ::CFRelease(mutableAttr);
     }
+#endif
     ::CFRelease(line);
 
     return success;

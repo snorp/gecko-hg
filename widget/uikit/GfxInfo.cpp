@@ -153,10 +153,11 @@ const nsTArray<GfxDriverInfo>&
 GfxInfo::GetGfxDriverInfo()
 {
   if (mDriverInfo->IsEmpty()) {
-    APPEND_TO_DRIVER_BLOCKLIST2(OperatingSystem::Ios,
+    APPEND_TO_DRIVER_BLOCKLIST2(OperatingSystem::Android,
       (nsAString&) GfxDriverInfo::GetDeviceVendor(VendorAll), GfxDriverInfo::allDevices,
       nsIGfxInfo::FEATURE_OPENGL_LAYERS, nsIGfxInfo::FEATURE_STATUS_OK,
-      DRIVER_COMPARISON_IGNORED, GfxDriverInfo::allDriverVersions );
+      DRIVER_COMPARISON_IGNORED, GfxDriverInfo::allDriverVersions,
+      "FEATURE_OK_FORCE_OPENGL" );
   }
 
   return *mDriverInfo;
@@ -167,6 +168,7 @@ GfxInfo::GetFeatureStatusImpl(int32_t aFeature,
                               int32_t *aStatus,
                               nsAString & aSuggestedDriverVersion,
                               const nsTArray<GfxDriverInfo>& aDriverInfo,
+                              nsACString& aFailureId,
                               OperatingSystem* aOS /* = nullptr */)
 {
   NS_ENSURE_ARG_POINTER(aStatus);
@@ -185,7 +187,7 @@ GfxInfo::GetFeatureStatusImpl(int32_t aFeature,
     return NS_OK;
   }
 
-  return GfxInfoBase::GetFeatureStatusImpl(aFeature, aStatus, aSuggestedDriverVersion, aDriverInfo, aOS);
+  return GfxInfoBase::GetFeatureStatusImpl(aFeature, aStatus, aSuggestedDriverVersion, aDriverInfo, aFailureId, aOS);
 }
 
 #ifdef DEBUG

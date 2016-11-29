@@ -39,6 +39,7 @@ def yasm_asflags(yasm, target):
             ('OSX', 'x86_64'): '-f macho64',
             ('WINNT', 'x86'): '-f win32',
             ('WINNT', 'x86_64'): '-f x64',
+            ('iOS', 'arm'): '-f macho32',
         }.get((target.os, target.cpu), None)
         if asflags is None:
             # We're assuming every x86 platform we support that's
@@ -903,5 +904,9 @@ set_define('HAVE_VISIBILITY_ATTRIBUTE',
 set_config('WRAP_SYSTEM_INCLUDES', wrap_system_includes)
 set_config('VISIBILITY_FLAGS', visibility_flags)
 
-include('windows.configure')
+@depends(target)
+def is_windows(target):
+    return target.kernel == 'WINNT'
+
+#include_when('windows.configure', when=is_windows)
 include('rust.configure')

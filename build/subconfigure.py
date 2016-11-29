@@ -225,6 +225,11 @@ def prepare(srcdir, objdir, shell, args):
 
     args, others = parser.parse_known_args(args)
 
+    if args.target.endswith('apple-darwin'):
+        # This is really iOS
+        args.target = args.target.replace('darwin', 'ios')
+
+
     data = {
         'target': args.target,
         'host': args.host,

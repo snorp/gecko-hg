@@ -79,7 +79,7 @@ public:
 
     static int32_t CoreTextWeightToCSSWeight(CGFloat aCTWeight);
 
-    virtual gfxFontFamily* GetDefaultFont(const gfxFontStyle* aStyle);
+    virtual gfxFontFamily* GetDefaultFontForPlatform(const gfxFontStyle* aStyle) override;
 
     virtual bool GetStandardFamilyName(const nsAString& aFontName, nsAString& aFamilyName);
 
@@ -102,7 +102,7 @@ private:
     virtual ~gfxMacPlatformFontList();
 
     // initialize font lists
-    virtual nsresult InitFontList();
+    virtual nsresult InitFontListForPlatform() override;
 
     // callback used by InitFontList
     static void AddFamilyFunc(const void *aValue, void *aContext);
@@ -118,15 +118,15 @@ private:
                                                            CFDictionaryRef userInfo);
 
     // search fonts system-wide for a given character, null otherwise
-    virtual gfxFontEntry* GlobalFontFallback(const uint32_t aCh,
-                                             int32_t aRunScript,
-                                             const gfxFontStyle* aMatchStyle,
-                                             uint32_t& aCmapCount,
-                                             gfxFontFamily** aMatchedFamily);
+    gfxFontEntry* GlobalFontFallback(const uint32_t aCh,
+                                     Script aRunScript,
+                                     const gfxFontStyle* aMatchStyle,
+                                     uint32_t& aCmapCount,
+                                     gfxFontFamily** aMatchedFamily) override;
 
-    virtual bool UsesSystemFallback() { return true; }
+    virtual bool UsesSystemFallback() override { return true; }
 
-    virtual already_AddRefed<FontInfoData> CreateFontInfoData();
+    virtual already_AddRefed<FontInfoData> CreateFontInfoData() override;
 
 #ifdef MOZ_BUNDLED_FONTS
     void ActivateBundledFonts();

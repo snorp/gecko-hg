@@ -5,7 +5,10 @@
 #ifndef _MOZILLA_GFX_SKIACGPOPUPDRAWER_H
 #define _MOZILLA_GFX_SKIACGPOPUPDRAWER_H
 
+#if 0
 #include <ApplicationServices/ApplicationServices.h>
+#endif
+
 #include "nsDebug.h"
 #include "mozilla/Vector.h"
 #include "ScaledFontMac.h"

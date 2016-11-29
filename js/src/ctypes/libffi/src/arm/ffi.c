@@ -751,6 +751,10 @@ ffi_closure_free (void *ptr)
 
 #else
 
+#ifdef XP_IOS
+#define __clear_cache sys_icache_invalidate
+#endif
+
 #define FFI_INIT_TRAMPOLINE(TRAMP,FUN,CTX)				\
 ({ unsigned char *__tramp = (unsigned char*)(TRAMP);			\
    unsigned int  __fun = (unsigned int)(FUN);				\

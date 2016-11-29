@@ -43,8 +43,6 @@ AppleDecoderModule::Init()
     return;
   }
 
-  Preferences::AddBoolVarCache(&sForceVDA, "media.apple.forcevda", false);
-
 #ifdef MOZ_WIDGET_COCOA
   // Ensure IOSurface framework is loaded.
   MacIOSurfaceLib::LoadLibrary();

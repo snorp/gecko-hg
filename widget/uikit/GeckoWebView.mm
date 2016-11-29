@@ -105,7 +105,7 @@ class ContentListener;
 @interface ViewGlue : NSObject
 {
 @public
-  nsCOMPtr<nsPIDOMWindow> mChromeWindow;
+  nsCOMPtr<nsPIDOMWindowOuter> mChromeWindow;
   nsCOMPtr<nsIDocShell> mBrowserDocShell;
   nsCOMPtr<nsIWebNavigation> mWebNavigation;
 
@@ -166,7 +166,7 @@ public:
                         const char* aTopic,
                         const char16_t* aData) override {
     if (strcmp(aTopic, "Window:Ready") == 0) {
-      nsCOMPtr<nsPIDOMWindow> window = do_GetInterface(aSubject);
+      nsCOMPtr<nsPIDOMWindowOuter> window = do_GetInterface(aSubject);
       MOZ_ASSERT(window);
 
       nsCOMPtr<nsIWidget> widget = WidgetUtils::DOMWindowToWidget(window);
@@ -286,7 +286,7 @@ public:
   }
 
   virtual NS_IMETHODIMP
-  OnHistoryNewEntry(nsIURI* aURI) override
+  OnHistoryNewEntry(nsIURI* aURI, int32_t aOldIndex) override
   {
     return NS_OK;
   }
@@ -380,7 +380,7 @@ NS_IMPL_ISUPPORTS(ContentListener, nsIWebProgressListener, nsISHistoryListener, 
     char flags[256];
     snprintf(flags, 256, "chrome,dialog=no,scrollbars=1,all,width=%d,height=%d", r.width, r.height);
 
-    nsCOMPtr<nsIDOMWindow> opened;
+    nsCOMPtr<mozIDOMWindowProxy> opened;
     ww->OpenWindow(nullptr, url, "_blank", flags,
                    nullptr, getter_AddRefs(opened));
     MOZ_ASSERT(opened);

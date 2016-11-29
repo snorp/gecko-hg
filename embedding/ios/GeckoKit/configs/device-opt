@@ -3,3 +3,26 @@ ac_add_options --target=armv7-apple-ios
 
 # Until I fix this
 ac_add_options --disable-webrtc
+
+export CFLAGS="-fdiagnostics-color"
+export CPPFLAGS="-fdiagnostics-color"
+export CXXFLAGS="-std=gnu++11 -fdiagnostics-color"
+export LDFLAGS="-fdiagnostics-color"
+
+SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+ARGS="-arch armv7 -isysroot $SDK_PATH -miphoneos-version-min=8.2"
+
+export HOST_CC=clang
+export HOST_CXX=clang++
+
+export CC="$(xcrun --sdk iphoneos --find clang) $ARGS"
+export CPP="$CPP -E"
+export CXX="$(xcrun --sdk iphoneos --find clang++) $ARGS"
+export LD="$CXX"
+export AR="$(xcrun --sdk iphoneos --find ar)"
+export NM="$(xcrun --sdk iphoneos --find nm)"
+export OTOOL="$(xcrun --sdk iphoneos --find otool)"
+export STRIP="$(xcrun --sdk iphoneos --find strip)"
+export PKG_CONFIG_PATH="${SDK_PATH}/usr/lib/pkgconfig/"
+export TOOLCHAIN_PREFIX="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/"
+export MOZ_IOS=1
