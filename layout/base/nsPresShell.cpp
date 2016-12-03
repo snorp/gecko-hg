@@ -197,7 +197,7 @@
 #include "mozilla/StyleSheetInlines.h"
 #include "mozilla/dom/ImageTracker.h"
 
-#ifdef ANDROID
+#if defined(ANDROID) || defined(MOZ_WIDGET_UIKIT)
 #include "nsIDocShellTreeOwner.h"
 #endif
 
@@ -7397,7 +7397,7 @@ PresShell::HandleEvent(nsIFrame* aFrame,
       // if the mouse is being captured then retarget the mouse event at the
       // document that is being captured.
       retargetEventDoc = capturingContent->GetComposedDoc();
-#ifdef ANDROID
+#if defined(ANDROID) || defined(MOZ_WIDGET_UIKIT)
     } else if ((aEvent->mClass == eTouchEventClass) ||
                (aEvent->mClass == eMouseEventClass) ||
                (aEvent->mClass == eWheelEventClass)) {
@@ -7958,7 +7958,7 @@ PresShell::HandleEvent(nsIFrame* aFrame,
   return rv;
 }
 
-#ifdef ANDROID
+#if defined(ANDROID) || defined(MOZ_WIDGET_UIKIT)
 nsIDocument*
 PresShell::GetTouchEventTargetDocument()
 {

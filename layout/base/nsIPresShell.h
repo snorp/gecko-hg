@@ -1728,7 +1728,7 @@ public:
 
   void SyncWindowProperties(nsView* aView);
 
-#ifdef ANDROID
+#if defined(ANDROID) || defined(MOZ_WIDGET_UIKIT)
   virtual nsIDocument* GetTouchEventTargetDocument() = 0;
 #endif
 

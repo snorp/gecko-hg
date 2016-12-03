@@ -32,6 +32,8 @@
     self.geckoView.navigationDelegate = self;
     self.geckoView.UIDelegate = self;
 
+    NSLog(@"SNORP: Home directory is: %@\n", NSHomeDirectory());
+    
     NSURLRequest* req = [NSURLRequest requestWithURL:[NSURL URLWithString:START_URL]];
     [self.geckoView loadRequest:req];
 }

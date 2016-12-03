@@ -700,15 +700,14 @@ gfxPlatformFontList::FindAndAddFamilies(const nsAString& aFamily,
     }
 
 #if defined(XP_DARWIN)
-    // for system font types allow hidden system fonts to be referenced
-    if ((familyEntry = mSystemFontFamilies.GetWeak(key)) != nullptr) {
-        return CheckFamily(familyEntry);
+    if (!familyEntry) {
+        familyEntry = mSystemFontFamilies.GetWeak(key);
     }
 #endif
 
-    // lookup in other family names list (mostly localized names)
-    if ((familyEntry = mOtherFamilyNames.GetWeak(key)) != nullptr) {
-        return CheckFamily(familyEntry);
+    // if not found, lookup in other family names list (mostly localized names)
+    if (!familyEntry) {
+        familyEntry = mOtherFamilyNames.GetWeak(key);
     }
 
     // if still not found and other family names not yet fully initialized,

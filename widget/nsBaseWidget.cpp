@@ -950,6 +950,7 @@ nsBaseWidget::UseAPZ()
 void nsBaseWidget::CreateCompositor()
 {
   LayoutDeviceIntRect rect = GetBounds();
+  printf_stderr("SNORP: creating compositor with bounds %dx%d\n", rect.width, rect.height);
   CreateCompositor(rect.width, rect.height);
 }
 

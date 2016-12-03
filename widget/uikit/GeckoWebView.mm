@@ -23,6 +23,7 @@
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsIObserverService.h"
 #include "nsIURI.h"
+#include "nsIXULWindow.h"
 #include "nsNetUtil.h"
 #include "nsString.h"
 #include "nsWeakReference.h"
@@ -372,13 +373,8 @@ NS_IMPL_ISUPPORTS(ContentListener, nsIWebProgressListener, nsISHistoryListener, 
         url = NS_LITERAL_CSTRING("chrome://browser/content/browser.xul");
     }
 
-    // It's a little naughty to call this outside of the UI thread, but
-    // works in practice. The bounds after setup:, so otherwise we would need
-    // to cache the bounds in layerSubviews.
-    ScreenIntRect r = UIKitPointsToDevPixels([mView bounds], [mView contentScaleFactor]);
-
     char flags[256];
-    snprintf(flags, 256, "chrome,dialog=no,scrollbars=1,all,width=%d,height=%d", r.width, r.height);
+    snprintf(flags, 256, "chrome,dialog=no,resizable,scrollbars=yes,width=10,height=10");
 
     nsCOMPtr<mozIDOMWindowProxy> opened;
     ww->OpenWindow(nullptr, url, "_blank", flags,
@@ -395,6 +391,8 @@ NS_IMPL_ISUPPORTS(ContentListener, nsIWebProgressListener, nsISHistoryListener, 
     mWidget->SetNativeData(NS_NATIVE_WIDGET, (uintptr_t)mView);
     mInputBridge.widget = mWidget;
 
+    ScreenIntRect bounds = UIKitPointsToDevPixels([mView bounds], [mView contentScaleFactor]);
+    mWidget->Resize(bounds.width, bounds.height, false);
     mWidget->Show(true);
 
     RunBlockOnUIThread(^{
@@ -627,10 +625,15 @@ NS_IMPL_ISUPPORTS(ContentListener, nsIWebProgressListener, nsISHistoryListener, 
   [mGlue openWindow];
 }
 
+- (void)resizeToBounds
+{
+  [mGlue resize:UIKitPointsToDevPixels([self bounds], [self contentScaleFactor])];
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  [mGlue resize:UIKitPointsToDevPixels([self bounds], [self contentScaleFactor])];
+  [self resizeToBounds];
 }
 
 - (void)widgetDestroyed

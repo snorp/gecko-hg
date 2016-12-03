@@ -222,6 +222,7 @@ NS_IMETHODIMP nsWindow::Resize(double aWidth, double aHeight, bool aRepaint)
 void
 nsWindow::ResizeCompositor(int width, int height)
 {
+  printf_stderr("SNORP: resizing compositor to %dx%d\n", width, height);
   if (!mCompositorSession) {
     for (nsWindow* child : mChildren) {
       if (child->mCompositorSession) {

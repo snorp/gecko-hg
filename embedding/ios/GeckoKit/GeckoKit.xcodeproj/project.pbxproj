@@ -807,6 +807,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = GCDQ9BX36A;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = GeckoWebViewExample/Info.plist;
@@ -828,6 +829,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = GCDQ9BX36A;
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = GeckoWebViewExample/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

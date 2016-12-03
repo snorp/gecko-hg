@@ -824,7 +824,7 @@ ExpandRootClipRect(Layer* aLayer, const ScreenMargin& aFixedLayerMargins)
   // clear the clip rect on aLayer entirely but this seems more precise.
   Maybe<ParentLayerIntRect> rootClipRect = aLayer->AsLayerComposite()->GetShadowClipRect();
   if (rootClipRect && aFixedLayerMargins != ScreenMargin()) {
-#ifndef MOZ_WIDGET_ANDROID
+#if !defined(MOZ_WIDGET_ANDROID) && !defined(MOZ_WIDGET_UIKIT)
     // We should never enter here on anything other than Fennec, since
     // aFixedLayerMargins should be empty everywhere else.
     MOZ_ASSERT(false);

@@ -914,7 +914,7 @@ audiounit_create_unit(AudioUnit * unit,
 
   desc.componentType = kAudioUnitType_Output;
 #if TARGET_OS_IPHONE
-  bool use_default_output = false;
+  bool use_default_output = true;
   desc.componentSubType = kAudioUnitSubType_RemoteIO;
 #else
   // Use the DefaultOutputUnit for output when no device is specified

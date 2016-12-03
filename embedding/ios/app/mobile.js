@@ -85,6 +85,25 @@ pref("media.cache_size", 32768);    // 32MB media cache
 pref("media.cache_resume_threshold", 10);
 pref("media.cache_readahead_limit", 30);
 
+// APZ stuff
+pref("apz.content_response_timeout", 600);
+pref("apz.allow_immediate_handoff", false);
+pref("apz.touch_start_tolerance", "0.06");
+pref("apz.axis_lock.breakout_angle", "0.7853982");    // PI / 4 (45 degrees)
+// APZ physics settings reviewed by UX
+pref("apz.axis_lock.mode", 1); // Use "strict" axis locking
+pref("apz.fling_curve_function_x1", "0.59");
+pref("apz.fling_curve_function_y1", "0.46");
+pref("apz.fling_curve_function_x2", "0.05");
+pref("apz.fling_curve_function_y2", "1.00");
+pref("apz.fling_curve_threshold_inches_per_ms", "0.01");
+// apz.fling_friction and apz.fling_stopped_threshold are currently ignored by Fennec.
+pref("apz.fling_friction", "0.004");
+pref("apz.fling_stopped_threshold", "0.0");
+pref("apz.max_velocity_inches_per_ms", "0.07");
+pref("apz.fling_accel_interval_ms", 750);
+pref("apz.overscroll.enabled", false);
+
 // Number of video frames we buffer while decoding video.
 // On Android this is decided by a similar value which varies for
 // each OMX decoder |OMX_PARAM_PORTDEFINITIONTYPE::nBufferCountMin|. This
@@ -103,3 +122,4 @@ pref("gfx.canvas.azure.accelerated", true);
 pref("javascript.options.baselinejit",      false);
 pref("javascript.options.ion",              false);
 pref("javascript.options.asmjs",            false);
+pref("javascript.options.native_regexp",    false);

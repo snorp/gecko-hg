@@ -580,7 +580,7 @@ GetRootDocumentElementFor(nsIWidget* aWidget)
 static nsIFrame*
 UpdateRootFrameForTouchTargetDocument(nsIFrame* aRootFrame)
 {
-#if defined(MOZ_WIDGET_ANDROID)
+#if defined(MOZ_WIDGET_ANDROID) || defined(MOZ_WIDGET_UIKIT)
   // Re-target so that the hit test is performed relative to the frame for the
   // Root Content Document instead of the Root Document which are different in
   // Android. See bug 1229752 comment 16 for an explanation of why this is necessary.

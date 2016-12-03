@@ -774,7 +774,6 @@ gfxMacPlatformFontList::InitFontListForPlatform()
     Telemetry::AutoTimer<Telemetry::MAC_INITFONTLIST_TOTAL> timer;
 
     // reset font lists
-    gfxPlatformFontList::InitFontList();
     mSystemFontFamilies.Clear();
 
     // get a list of families from the collection of available fonts
