@@ -2,6 +2,11 @@
 
 set -e
 
+die() {
+    echo "Build failed."
+    exit 1
+}
+
 GECKO_SRCROOT=${SRCROOT}/../../..
 
 if test ${CONFIGURATION} == "Debug"; then
@@ -31,7 +36,7 @@ if test "${ACTION}" != "clean"; then
 
     pushd ${GECKO_SRCROOT}
     ln -sf $MOZCONFIG_TARGET mozconfig
-    env -i USER=$USER HOME=$HOME SHELL=$SHELL MOZ_OBJDIR=$GECKO_OBJDIR AUTOCLOBBER=1 bash -l -c './mach build && ./mach package' | tee build.log
+    env -i USER=$USER HOME=$HOME SHELL=$SHELL MOZ_OBJDIR=$GECKO_OBJDIR AUTOCLOBBER=1 bash -l -c './mach build && ./mach package' || die | tee build.log
     popd
 
     # The packaged GeckoKit has been stripped, even for debug builds (?), so don't use that
@@ -54,6 +59,8 @@ if test "${ACTION}" != "clean"; then
     # Copy the application data into /Resources
     # mkdir -p ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Resources
     rsync --delete -a ${GECKO_OBJDIR}/dist/geckokit/ ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/browser/
+
+    # mv ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/browser/GeckoKit ${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}
 
     # Sign all of the libraries
     if test ${ARCHS} == "armv7"; then
